@@ -1,3 +1,5 @@
+> Historical two-app documentation. Version 0.5 merges both modes; see the [current controls](../README.md) and [merge validation](REDESIGN-0.5.md).
+
 # Troubleshooting
 
 ## Flipper says the app API is incompatible

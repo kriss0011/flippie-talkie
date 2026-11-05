@@ -18,6 +18,10 @@ def verify_manifest(base, entries):
 
 
 if __name__ == '__main__':
+    apps = list((ROOT / 'sd/apps').rglob('*.fap'))
+    manifests = list((ROOT / 'firmware').rglob('application.fam'))
+    if [p.name for p in apps] != ['Flippie_Talkie.fap'] or len(manifests) != 1:
+        raise ValueError('The maintained firmware and SD package must contain exactly one unified app')
     release = json.loads((ROOT / 'releases/manifest.json').read_text())
     count = verify_manifest(ROOT, release['sha256'])
     archive = json.loads((ROOT / 'archive/manifest.json').read_text())

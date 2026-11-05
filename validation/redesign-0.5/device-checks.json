@@ -1,0 +1,274 @@
+[
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "input send right short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send left short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send right short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send right short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "pmr_capture",
+    "response": "version=18 on_dbm=-88 off_dbm=-92 audio_floor=-98 audio_off=-94 floor_ready=1 state=ready profile=2 samples=0 elapsed=0 signal=IDLE rssi=-101 armed=1 dropped=0 files=0 peak=-96 legacy_trigger_dbm=-80 triggers=0 rx_state=13 read_errors=0 recoveries=0 last_signal_tick=0 tuned_hz=446118438 calibration=off cal_step=0 selected=6 range=0 audio_setting=6 center=-101 carrier_checks=0 tuning_probes=0 file=\r\nchannel=10 frequency=446118750 menu=0 menu_index=0 settings_error=0 voice=0\r\nlocal_record=0 speaker=1 volume=7 saved=0 sd_error=0 wav_frames=0 sd_writes=0 sd_max_us=0 gap_frames=0 clips=0 max_irq_cycles=0 max_gap_cycles=0 ready_file=0"
+  },
+  {
+    "check": "Shared settings applied to standalone mode",
+    "passed": true
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "pmr_capture",
+    "response": "version=18 on_dbm=-88 off_dbm=-92 audio_floor=-98 audio_off=-94 floor_ready=1 state=ready profile=2 samples=0 elapsed=0 signal=IDLE rssi=-100 armed=0 dropped=0 files=0 peak=-95 legacy_trigger_dbm=-80 triggers=0 rx_state=13 read_errors=0 recoveries=0 last_signal_tick=0 tuned_hz=446118438 calibration=off cal_step=0 selected=6 range=0 audio_setting=6 center=-100 carrier_checks=0 tuning_probes=0 file=\r\nchannel=10 frequency=446118750 menu=0 menu_index=0 settings_error=0 voice=0\r\nlocal_record=0 speaker=1 volume=7 saved=0 sd_error=0 wav_frames=0 sd_writes=0 sd_max_us=0 gap_frames=0 clips=0 max_irq_cycles=0 max_gap_cycles=0 ready_file=0"
+  },
+  {
+    "check": "OK pauses standalone listening",
+    "passed": true
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "pmr_capture",
+    "response": "version=18 on_dbm=-88 off_dbm=-92 audio_floor=-98 audio_off=-94 floor_ready=1 state=ready profile=2 samples=0 elapsed=0 signal=IDLE rssi=-96 armed=1 dropped=0 files=0 peak=-95 legacy_trigger_dbm=-80 triggers=0 rx_state=13 read_errors=0 recoveries=0 last_signal_tick=0 tuned_hz=446118438 calibration=off cal_step=0 selected=6 range=0 audio_setting=6 center=-96 carrier_checks=0 tuning_probes=0 file=\r\nchannel=10 frequency=446118750 menu=0 menu_index=0 settings_error=0 voice=0\r\nlocal_record=0 speaker=1 volume=7 saved=0 sd_error=0 wav_frames=0 sd_writes=0 sd_max_us=0 gap_frames=0 clips=0 max_irq_cycles=0 max_gap_cycles=0 ready_file=0"
+  },
+  {
+    "check": "OK resumes standalone listening",
+    "passed": true
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "pmr_connect",
+    "response": "version=3 mode=1 connected=0 attached=0 channel=10 state=0 listen=0 rssi=-127 error=0 rx_dropped=0 tx_dropped=0 underruns=0 tx_tests=0 tx_marcstate=0 read_errors=0 bt_active=0 bt_phy=0 bt_ready=0 ble_packets=0 ble_ms=0 ble_max=0\r\nrx_rate=4000 carrier_checks=0 sample_drops=0 queue_drops=0 ble_timeouts=0 ble_failures=0 audio_floor=-102 gate_reference=0 gate_ambiguous=0"
+  },
+  {
+    "check": "Shared channel and USB preference applied to browser mode",
+    "passed": true
+  },
+  {
+    "command": "input send right short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send left short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "input send left short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send right short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send right short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send left short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "pmr_capture",
+    "response": "version=18 on_dbm=-87 off_dbm=-91 audio_floor=-102 audio_off=-98 floor_ready=1 state=ready profile=2 samples=0 elapsed=0 signal=IDLE rssi=-106 armed=1 dropped=0 files=0 peak=-94 legacy_trigger_dbm=-80 triggers=0 rx_state=13 read_errors=0 recoveries=0 last_signal_tick=0 tuned_hz=446106140 calibration=off cal_step=0 selected=6 range=0 audio_setting=6 center=-106 carrier_checks=0 tuning_probes=0 file=\r\nchannel=9 frequency=446106250 menu=0 menu_index=0 settings_error=0 voice=0\r\nlocal_record=1 speaker=1 volume=8 saved=0 sd_error=0 wav_frames=0 sd_writes=0 sd_max_us=0 gap_frames=0 clips=0 max_irq_cycles=0 max_gap_cycles=0 ready_file=1"
+  },
+  {
+    "check": "Original standalone preferences restored",
+    "passed": true
+  },
+  {
+    "command": "input send left short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send right short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "pmr_connect",
+    "response": "version=3 mode=0 connected=0 attached=0 channel=9 state=0 listen=0 rssi=-127 error=0 rx_dropped=0 tx_dropped=0 underruns=0 tx_tests=0 tx_marcstate=0 read_errors=0 bt_active=1 bt_phy=0 bt_ready=0 ble_packets=0 ble_ms=0 ble_max=0\r\nrx_rate=3200 carrier_checks=0 sample_drops=0 queue_drops=0 ble_timeouts=0 ble_failures=0 audio_floor=-97 gate_reference=0 gate_ambiguous=0"
+  },
+  {
+    "check": "Return from standalone to Bluetooth mode preserves shared preferences",
+    "passed": true
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  },
+  {
+    "command": "loader open /ext/apps/Sub-GHz/Flippie_Talkie.fap",
+    "response": ""
+  },
+  {
+    "command": "input send down short",
+    "response": ""
+  },
+  {
+    "command": "input send ok short",
+    "response": ""
+  },
+  {
+    "command": "pmr_connect",
+    "response": "version=3 mode=0 connected=0 attached=0 channel=9 state=0 listen=0 rssi=-127 error=0 rx_dropped=0 tx_dropped=0 underruns=0 tx_tests=0 tx_marcstate=0 read_errors=0 bt_active=1 bt_phy=0 bt_ready=0 ble_packets=0 ble_ms=0 ble_max=0\r\nrx_rate=3200 carrier_checks=0 sample_drops=0 queue_drops=0 ble_timeouts=0 ble_failures=0 audio_floor=-99 gate_reference=0 gate_ambiguous=0"
+  },
+  {
+    "check": "Preferences survive app restart",
+    "passed": true
+  },
+  {
+    "command": "input send back short",
+    "response": ""
+  }
+]

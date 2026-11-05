@@ -1,3 +1,5 @@
+> Historical two-app documentation. Version 0.5 merges both modes; see the [current controls](../README.md) and [merge validation](REDESIGN-0.5.md).
+
 # Flippie Talkie: rename and upgrade
 
 The project is now **Flippie Talkie**. This release changes branding, app/package names and the web address. It keeps the receive-audio improvements from version 0.3 and the standalone speaker behavior from version 0.17.

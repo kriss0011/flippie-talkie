@@ -1,0 +1,50 @@
+[
+  {
+    "channel": 9,
+    "mode": 1,
+    "state": 0,
+    "listening": 0,
+    "error": 0,
+    "version": 3
+  },
+  {
+    "channel": 1,
+    "mode": 1,
+    "state": 0,
+    "listening": 0,
+    "error": 0,
+    "version": 3
+  },
+  {
+    "channel": 16,
+    "mode": 1,
+    "state": 0,
+    "listening": 0,
+    "error": 0,
+    "version": 3
+  },
+  {
+    "channel": 9,
+    "mode": 1,
+    "state": 0,
+    "listening": 0,
+    "error": 0,
+    "version": 3
+  },
+  {
+    "channel": 9,
+    "mode": 1,
+    "state": 1,
+    "listening": 1,
+    "error": 0,
+    "version": 3
+  },
+  {
+    "channel": 9,
+    "mode": 1,
+    "state": 0,
+    "listening": 0,
+    "error": 5,
+    "version": 3
+  }
+]

@@ -1,3 +1,5 @@
+> Historical two-app documentation. Version 0.5 merges both modes; see the [current controls](../README.md) and [merge validation](REDESIGN-0.5.md).
+
 Current branding and installation checks are in [RENAME-0.4.md](RENAME-0.4.md). The original names below identify the releases actually tested.
 
 # Validation and evidence boundaries

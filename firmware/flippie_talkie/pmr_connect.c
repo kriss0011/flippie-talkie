@@ -5,12 +5,14 @@
 #include <gui/gui.h>
 #include <gui/view_port.h>
 #include <input/input.h>
+#include "pmr_ui.h"
+#include "pmr_preferences.h"
 #include <cli/cli.h>
 #include <stdio.h>
 #include <string.h>
 #include <stm32wbxx_ll_spi.h>
 #include <stm32wbxx_ll_tim.h>
-#include "pmr_dsp.h"
+#include "pmr_link_dsp.h"
 #include "pmr_radio_core.h"
 #include "pmr_codec.h"
 #include "pmr_rx_gate.h"
@@ -35,6 +37,7 @@ typedef struct {
     PmrRxGate rx_gate;uint32_t receive_rate,carrier_checks;
     volatile uint32_t sample_drops,queue_drops,ble_timeouts,ble_failures;volatile int32_t rssi;
     bool spi_owned,rx_timer,was_bt_active;
+    bool menu_open,help_open,settings_error;uint32_t menu_index;PmrPreferences prefs;
     char original_name[32];
     PmrDsp dsp;uint32_t resample_phase;int16_t previous;
     int16_t rx[RX_BLOCKS][VOICE_SAMPLES];volatile uint32_t rx_head,rx_tail;uint32_t rx_count;
@@ -100,13 +103,40 @@ static void status_send(App* a) {
 }
 static void input(InputEvent* e,void* context) {App* a=context;furi_message_queue_put(a->keys,e,0);}
 static void draw(Canvas* c,void* context) {
-    App* a=context;char s[64];canvas_clear(c);canvas_set_font(c,FontPrimary);canvas_draw_str(c,2,10,"Flippie Talkie");
-    canvas_set_font(c,FontSecondary);snprintf(s,sizeof(s),"%s | CH %02lu | %ld dBm",a->mode?"USB":"BT",a->channel,a->rssi);canvas_draw_str(c,2,22,s);
-    const char* state=!a->connected?(a->mode?"Connect browser via USB":"Pair in your web browser"):a->state==4?"TX: browser microphone":a->state==3?"Preparing microphone...":a->state==2?"RECEIVING to browser":a->listening?"Listening to selected channel":"Connected | Listening paused";
-    canvas_draw_str(c,2,34,state);
-    if(a->error){snprintf(s,sizeof(s),"Status %lu | See browser",a->error);canvas_draw_str(c,2,44,s);}
-    else canvas_draw_str(c,2,44,"Browser: mic + speaker");
-    canvas_draw_str(c,2,54,"L/R: channel  OK: BT / USB");canvas_draw_str(c,2,64,"Back: stop and exit");
+    App* a=context;char s[64];
+    if(a->state==4 || a->ptt_pending) {
+        pmr_ui_radio(c,"TX",a->channel,a->rssi,a->state==4?"Sending":"Buffering","Browser mic");
+        elements_button_center(c,"Stop");return;
+    }
+    if(a->help_open) {
+        pmr_ui_header(c,"Browser link","HELP");canvas_set_font(c,FontSecondary);
+        canvas_draw_str(c,3,25,a->mode?"USB: Chrome / Edge":"BT: Chrome / Bluefy");
+        canvas_draw_str(c,3,36,"Start listening in browser.");
+        canvas_draw_str(c,3,47,"Browser mic: hold to talk.");elements_button_center(c,"Back");return;
+    }
+    if(a->menu_open) {
+        pmr_ui_header(c,"Link config",a->settings_error?"SD error":"CONFIG");
+        const char* labels[]={"Channel","Connection","Listening","How to connect"};
+        for(uint32_t i=0;i<4;i++) {
+            s[0]=0;
+            if(i==0)snprintf(s,sizeof(s),"< %02lu >",a->channel);
+            else if(i==1)snprintf(s,sizeof(s),"< %s >",a->mode?"USB":"BT");
+            else if(i==2)snprintf(s,sizeof(s),"< %s >",!a->connected?"No link":a->listening?"On":"Off");
+            pmr_ui_row(c,i,i==a->menu_index,labels[i],s);
+        }return;
+    }
+    const char* state=a->state==4?"Sending":a->state==3?"Buffering":a->state==2?"Receiving":!a->connected?"No link":a->listening?"Listening":"Paused";
+    const char* detail=!a->connected?"Connect browser":"Browser audio";
+    if(a->error){detail=a->error==1?"Channel busy":a->error==2?"TX restricted":a->error==5?"Link timed out":"Check browser";}
+    pmr_ui_radio(c,a->mode?"USB":"BT",a->channel,a->rssi,state,detail);
+    elements_button_left(c,"Config");elements_button_right(c,"Help");
+    if(a->state==4 || a->state==3)elements_button_center(c,"Stop");
+    else if(a->connected)elements_button_center(c,a->listening?"Pause":"Listen");
+}
+static void preferences_save(App* a) {
+    a->prefs.channel=a->channel;a->prefs.transport=a->mode;
+    Storage* storage=furi_record_open(RECORD_STORAGE);
+    a->settings_error=!pmr_preferences_save(storage,&a->prefs);furi_record_close(RECORD_STORAGE);
 }
 static bool sample_rssi_irq(uint8_t* rssi) {
     const FuriHalSpiBusHandle* h=&furi_hal_spi_bus_handle_subghz;SPI_TypeDef* spi=h->bus->spi;
@@ -285,25 +315,54 @@ static void mode_set(App* a,uint32_t mode) {
     a->receive_rate=mode?RECEIVE_RATE:RECEIVE_RATE_BLE;a->mode=mode;
 }
 int32_t pmr_connect_app(void* args) {
-    UNUSED(args);App* a=malloc(sizeof(App));memset(a,0,sizeof(*a));a->channel=9;a->receive_rate=RECEIVE_RATE_BLE;a->rssi=-127;a->running=true;
+    UNUSED(args);App* a=malloc(sizeof(App));memset(a,0,sizeof(*a));Storage* storage=furi_record_open(RECORD_STORAGE);pmr_preferences_load(storage,&a->prefs);furi_record_close(RECORD_STORAGE);
+    a->channel=a->prefs.channel;a->mode=a->prefs.transport;a->receive_rate=a->mode?RECEIVE_RATE:RECEIVE_RATE_BLE;a->rssi=-127;a->running=true;
     a->keys=furi_message_queue_alloc(8,sizeof(InputEvent));a->commands=furi_message_queue_alloc(8,sizeof(Command));
     a->outgoing=furi_message_queue_alloc(8,sizeof(Packet));a->incoming=furi_stream_buffer_alloc(4096,1);a->flags=furi_event_flag_alloc();
     Gui* gui=furi_record_open(RECORD_GUI);a->view=view_port_alloc();view_port_draw_callback_set(a->view,draw,a);view_port_input_callback_set(a->view,input,a);gui_add_view_port(gui,a->view,GuiLayerFullscreen);
     Cli* cli=furi_record_open(RECORD_CLI);cli_add_command(cli,"pmr_connect",CliCommandFlagParallelSafe,cli_command,a);
     furi_hal_power_insomnia_enter();furi_hal_subghz_reset();calibrate(a);
     a->bt=furi_record_open(RECORD_BT);a->was_bt_active=furi_hal_bt_is_active();snprintf(a->original_name,sizeof(a->original_name),"%s",bt_get_profile_adv_name(a->bt));
-    bt_disconnect(a->bt);bt_set_status_changed_callback(a->bt,bt_status,a);bt_set_profile(a->bt,BtProfileSerial);furi_hal_bt_start_advertising();
+    bt_disconnect(a->bt);bt_set_status_changed_callback(a->bt,bt_status,a);bt_set_profile(a->bt,BtProfileSerial);if(!a->mode)furi_hal_bt_start_advertising();else furi_hal_bt_stop_advertising();
     a->worker=furi_thread_alloc_ex("PmrLink",4096,transport_worker,a);furi_thread_start(a->worker);
     uint32_t next_ui=0,stable=0,last_measure=0;
     while(a->running){
         uint32_t now=furi_get_tick();InputEvent key;
         if((int32_t)(a->probe_until-now)>0 && now>=a->probe_next){uint8_t zeros[VOICE_BYTES]={0};packet_send(a,0x83,0,a->rx_sequence++,zeros,sizeof(zeros));a->probe_next+=(VOICE_SAMPLES*1000U+a->receive_rate-1)/a->receive_rate;}
         while(furi_message_queue_get(a->keys,&key,0)==FuriStatusOk){
-            if(key.type!=InputTypeShort)continue;
-            if(key.key==InputKeyBack){a->running=false;break;}
-            if(key.key==InputKeyOk){mode_set(a,!a->mode);stable=0;}
-            else if((key.key==InputKeyLeft || key.key==InputKeyRight) && a->state!=4){
-                radio_stop(a);a->channel=key.key==InputKeyRight?(a->channel%16+1):(a->channel==1?16:a->channel-1);calibrate(a);status_send(a);stable=0;
+            if(key.type!=InputTypeShort && key.type!=InputTypeRepeat)continue;
+            bool short_press=key.type==InputTypeShort;
+            if(a->state==4 || a->ptt_pending) {
+                if(short_press && key.key==InputKeyBack){a->running=false;break;}
+                if(short_press && key.key==InputKeyOk)a->ptt_stop=true;
+                continue;
+            }
+            if(a->help_open) {
+                if(short_press && (key.key==InputKeyBack || key.key==InputKeyOk))a->help_open=false;
+            } else if(a->menu_open) {
+                if(key.key==InputKeyBack && short_press){a->menu_open=false;preferences_save(a);}
+                else if(key.key==InputKeyUp)a->menu_index=(a->menu_index+3)%4;
+                else if(key.key==InputKeyDown)a->menu_index=(a->menu_index+1)%4;
+                else if(key.key==InputKeyLeft || key.key==InputKeyRight || (key.key==InputKeyOk && short_press)) {
+                    if(a->state==4 || a->ptt_pending)continue;
+                    if(a->menu_index==0) {
+                        radio_stop(a);a->channel=key.key==InputKeyLeft?(a->channel==1?16:a->channel-1):(a->channel%16+1);
+                        calibrate(a);stable=0;status_send(a);
+                    } else if(a->menu_index==1){mode_set(a,!a->mode);stable=0;}
+                    else if(a->menu_index==2 && a->connected){a->listening=!a->listening;radio_stop(a);stable=0;status_send(a);}
+                    else if(a->menu_index==3 && key.key==InputKeyOk && short_press)a->help_open=true;
+                }
+            } else {
+                if(key.key==InputKeyBack && short_press){a->running=false;break;}
+                if(key.key==InputKeyLeft && short_press){a->menu_open=true;a->menu_index=0;}
+                else if(key.key==InputKeyRight && short_press)a->help_open=true;
+                else if(key.key==InputKeyOk && short_press) {
+                    if(a->state==4 || a->ptt_pending){a->ptt_stop=true;}
+                    else if(a->connected){a->listening=!a->listening;radio_stop(a);stable=0;status_send(a);}
+                    else a->help_open=true;
+                } else if((key.key==InputKeyUp || key.key==InputKeyDown) && a->state!=4 && !a->ptt_pending) {
+                    radio_stop(a);a->channel=key.key==InputKeyUp?(a->channel%16+1):(a->channel==1?16:a->channel-1);calibrate(a);status_send(a);stable=0;
+                }
             }
         }
         Command cmd;
@@ -350,7 +409,7 @@ int32_t pmr_connect_app(void* args) {
         if(now>=next_ui){view_port_update(a->view);next_ui=now+150;}
         furi_delay_ms(10);
     }
-    a->listening=false;radio_stop(a);a->usb_abort=true;
+    a->listening=false;radio_stop(a);preferences_save(a);a->usb_abort=true;
     while(a->usb_active)furi_delay_ms(10);
     furi_thread_join(a->worker);furi_thread_free(a->worker);bt_set_status_changed_callback(a->bt,NULL,NULL);bt_disconnect(a->bt);furi_hal_bt_serial_set_event_callback(0,NULL,NULL);
     bt_set_profile(a->bt,BtProfileSerial);if(!a->was_bt_active)furi_hal_bt_stop_advertising();

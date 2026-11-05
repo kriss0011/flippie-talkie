@@ -1,0 +1,12 @@
+App(
+    appid="flippie_talkie",
+    name="Flippie Talkie",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="flippie_talkie_app",
+    stack_size=6144,
+    fap_category="Sub-GHz",
+    fap_icon="talkie_10px.png",
+    fap_version=(0, 5),
+    fap_description="PMR radio: speaker, SD recording, Bluetooth/USB audio and push-to-talk",
+    fap_author="Flippie Talkie",
+)

@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include "pmr_rx_gate.h"
-#include "pmr_dsp.h"
+#include "pmr_link_dsp.h"
 int main(void) {
     const int levels[]={-80,-98,-110};
     for(unsigned j=0;j<sizeof(levels)/sizeof(levels[0]);j++) {

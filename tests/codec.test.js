@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {execFileSync} from 'node:child_process';import {encode,decode,frame,Parser,SAMPLES,BYTES} from '../web/codec.js';import {mkdtempSync,writeFileSync} from 'node:fs';import {tmpdir} from 'node:os';import {join,resolve} from 'node:path';
 const temp=mkdtempSync(join(tmpdir(),'pmr-codec-')),bin=join(temp,'codec');
-execFileSync(process.env.CC || 'cc',['-std=c11','-Wall','-Wextra','-Werror','-I',resolve('firmware/pmr_connect'),'tests/codec_bridge.c','-o',bin]);
+execFileSync(process.env.CC || 'cc',['-std=c11','-Wall','-Wextra','-Werror','-I',resolve('firmware/flippie_talkie'),'tests/codec_bridge.c','-o',bin]);
 const pcm=Int16Array.from({length:SAMPLES*30},(_,i)=>Math.round(Math.sin(i*2*Math.PI*710/6000)*22000+Math.sin(i*.071)*7000));
 let blocks=[],state={index:0};for(let i=0;i<pcm.length;i+=SAMPLES)blocks.push(encode(pcm.subarray(i,i+SAMPLES),state));const encoded=Buffer.concat(blocks);
 test('C and JavaScript encode and decode match sample for sample',()=>{

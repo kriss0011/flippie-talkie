@@ -3,6 +3,8 @@
 #include <gui/gui.h>
 #include <gui/view_port.h>
 #include <input/input.h>
+#include "pmr_ui.h"
+#include "pmr_preferences.h"
 #include <storage/storage.h>
 #include <cli/cli.h>
 #include <stdio.h>
@@ -76,7 +78,8 @@ typedef struct {
     uint32_t max_irq_cycles, max_gap_cycles;
     uint32_t beep_edges, pcm_edges, speaker_tests;
     uint32_t channel,menu_index;
-    bool menu_open,help_open,settings_dirty,settings_error,voice_tx;
+    uint32_t transport;
+    bool tests_open,menu_open,help_open,settings_dirty,settings_error,voice_tx;
     uint32_t settings_changed,notice_until;
     char notice[40];
     bool testing_speaker,transmitting;
@@ -129,27 +132,13 @@ static void settings_changed(App* app) {
     app->settings_dirty=true;app->settings_changed=furi_get_tick();
 }
 static void settings_load(App* app) {
-    uint8_t data[8]={0};
-    File* file=storage_file_alloc(app->storage);
-    bool ok=storage_file_open(file,CONFIG_PATH,FSAM_READ,FSOM_OPEN_EXISTING) &&
-        storage_file_size(file)==8 && storage_file_read(file,data,8)==8;
-    storage_file_close(file);storage_file_free(file);
-    uint8_t check=0;for(unsigned i=0;i<7;i++) check^=data[i];
-    if(ok && !memcmp(data,"PMR\1",4) && data[4]>=1 && data[4]<=16 && data[5]<=8 && data[6]<=1 && data[7]==check) {
-        app->channel=data[4];app->volume=data[5];app->record_enabled=data[6];
-    }
+    PmrPreferences prefs;pmr_preferences_load(app->storage,&prefs);
+    app->channel=prefs.channel;app->volume=prefs.volume;app->record_enabled=prefs.record;app->transport=prefs.transport;
 }
 static void settings_save(App* app) {
     if(!app->settings_dirty || app->recording || app->transmitting) return;
-    storage_common_mkdir(app->storage,APP_DIR);
-    uint8_t data[8]={'P','M','R',1,app->channel,app->volume,app->record_enabled,0};
-    for(unsigned i=0;i<7;i++) data[7]^=data[i];
-    File* file=storage_file_alloc(app->storage);
-    bool ok=storage_file_open(file,CONFIG_PATH ".tmp",FSAM_WRITE,FSOM_CREATE_ALWAYS) &&
-        storage_file_write(file,data,8)==8 && storage_file_sync(file);
-    storage_file_close(file);storage_file_free(file);
-    if(ok) ok=storage_common_rename(app->storage,CONFIG_PATH ".tmp",CONFIG_PATH)==FSE_OK;
-    app->settings_error=!ok;app->settings_dirty=false;
+    PmrPreferences prefs={app->channel,app->volume,app->record_enabled,app->transport};
+    app->settings_error=!pmr_preferences_save(app->storage,&prefs);app->settings_dirty=false;
 }
 static void notice(App* app,const char* message) {
     snprintf(app->notice,sizeof(app->notice),"%s",message);
@@ -299,51 +288,44 @@ static bool prepare_noise_floor(App* app) {
 }
 
 static void draw(Canvas* canvas, void* context) {
-    App* app=context;
-    furi_mutex_acquire(app->mutex,FuriWaitForever);
-    char line[64];canvas_clear(canvas);canvas_set_font(canvas,FontPrimary);
-    if(app->help_open && !app->recording && !app->saving) {
-        canvas_set_font(canvas,FontSecondary);canvas_draw_str(canvas,2,10,"Flippie Talkie | Help");canvas_set_font(canvas,FontSecondary);
-        canvas_draw_str(canvas,2,21,"Match channel on both radios.");
-        canvas_draw_str(canvas,2,31,"Motorola privacy code: 0/off");
-        canvas_draw_str(canvas,2,41,"Hold OK: say channel over RF");
-        canvas_draw_str(canvas,2,51,"REC saves full receives to SD.");
-        canvas_draw_str(canvas,2,62,"Back: return     v0.18");
-    } else if(app->transmitting) {
-        snprintf(line,sizeof(line),"TRANSMITTING  CH %lu",app->channel);canvas_draw_str(canvas,2,12,line);
-        canvas_set_font(canvas,FontSecondary);
-        snprintf(line,sizeof(line),app->voice_tx?"Saying: Testing channel %lu":"Rising tones on channel %lu",app->channel);
-        canvas_draw_str(canvas,2,29,line);
-        canvas_draw_str(canvas,2,43,"Listen on your Motorola.");
-        canvas_draw_str(canvas,2,61,"OK / Back: stop transmission");
-    } else if(app->menu_open && !app->recording && !app->saving) {
-        canvas_set_font(canvas,FontSecondary);canvas_draw_str(canvas,2,10,"Flippie Talkie | Options");canvas_set_font(canvas,FontSecondary);
+    App* app=context;furi_mutex_acquire(app->mutex,FuriWaitForever);
+    char line[64];
+    if(app->transmitting) {
+        pmr_ui_radio(canvas,"TX",app->channel,app->rssi_dbm,"Sending",app->voice_tx?"Voice test":"Tone test");
+        elements_button_center(canvas,"Stop");
+    } else if(app->help_open) {
+        pmr_ui_header(canvas,"Controls","HELP");canvas_set_font(canvas,FontSecondary);
+        canvas_draw_str(canvas,3,25,"Up / Down: speaker volume");
+        canvas_draw_str(canvas,3,36,"Hold OK: send channel test");
+        canvas_draw_str(canvas,3,47,"WAVs: apps_data/pmr_voice");elements_button_center(canvas,"Back");
+    } else if(app->menu_open || app->tests_open) {
+        uint32_t count=app->tests_open?3:5;
+        pmr_ui_header(canvas,app->tests_open?"Radio tests":"Radio config",app->tests_open?"RF / AUDIO":(app->settings_error?"SD error":"CONFIG"));
         uint32_t first=app->menu_index>=4?app->menu_index-3:0;
-        for(uint32_t row=0;row<4 && first+row<6;row++) {
-            uint32_t item=first+row;
-            const char* label=item==0?"Send spoken channel test":item==1?(app->record_enabled?"Auto-record: ON":"Auto-record: OFF"):
-                item==2?(app->armed?"Pause listening":"Resume listening"):item==3?"Send rising tones":item==4?"Test built-in speaker":"Help / controls";
-            snprintf(line,sizeof(line),"%c %s",item==app->menu_index?'>':' ',label);
-            canvas_draw_str(canvas,1,22+row*10,line);
+        for(uint32_t row=0;row<4 && first+row<count;row++) {
+            uint32_t item=first+row;const char* label;line[0]=0;
+            if(app->tests_open)label=item==0?"Send spoken channel":item==1?"Send rising tones":"Test speaker";
+            else {
+                label=item==0?"Channel":item==1?"Speaker":item==2?"Auto-record":item==3?"Listening":"Controls";
+                if(item==0)snprintf(line,sizeof(line),"< %02lu >",app->channel);
+                else if(item==1)snprintf(line,sizeof(line),"< %lu/8 >",app->volume);
+                else if(item==2)snprintf(line,sizeof(line),"< %s >",app->record_enabled?"On":"Off");
+                else if(item==3)snprintf(line,sizeof(line),"< %s >",app->armed?"On":"Off");
+            }
+            pmr_ui_row(canvas,row,item==app->menu_index,label,line);
         }
-        canvas_draw_str(canvas,2,63,"Up/Down  OK: choose  Back");
+        pmr_ui_scroll(canvas,app->menu_index,count);
     } else {
-        canvas_set_font(canvas,FontSecondary);snprintf(line,sizeof(line),"Flippie Talkie   CH %02lu",app->channel);canvas_draw_str(canvas,2,10,line);
-        canvas_set_font(canvas,FontSecondary);
-        uint32_t hz=pmr_channel_hz(app->channel);
-        snprintf(line,sizeof(line),"%lu.%05lu MHz    %ld dBm",hz/1000000,(hz%1000000)/10,app->rssi_dbm);canvas_draw_str(canvas,2,21,line);
-        const char* state=app->saving?"SAVING":app->recording?"RECEIVING":app->armed?"LISTENING":"PAUSED";
-        if(app->error) snprintf(line,sizeof(line),"Receiver error: OK > Resume");
-        else if(app->sd_error) snprintf(line,sizeof(line),"SD error - listening only");
-        else if(app->settings_error) snprintf(line,sizeof(line),"Settings could not be saved");
-        else if((int32_t)(app->notice_until-furi_get_tick())>0) snprintf(line,sizeof(line),"%s",app->notice);
-        else if(app->testing_speaker) snprintf(line,sizeof(line),"Playing speaker sound test");
-        else if(app->recording) snprintf(line,sizeof(line),"%s  %lu s",state,app->elapsed);
-        else snprintf(line,sizeof(line),"%s    Saved: %lu",state,app->saved);
-        canvas_draw_str(canvas,2,32,line);
-        snprintf(line,sizeof(line),"REC %s    Volume %lu/8",app->record_enabled?"ON":"OFF",app->volume);canvas_draw_str(canvas,2,42,line);
-        canvas_draw_str(canvas,2,52,app->recording?"Up/Down: volume  OK: pause":"L/R: channel   Up/Down: vol");
-        canvas_draw_str(canvas,2,63,app->recording?"Back: save and exit":"OK: menu   Hold OK: say CH");
+        const char* state=app->saving?"Saving":app->recording?"Receiving":app->armed?"Listening":"Paused";
+        snprintf(line,sizeof(line),"Vol %lu  REC %s",app->volume,app->record_enabled?"on":"off");
+        if(app->recording)snprintf(line,sizeof(line),"%lu s  %s",app->elapsed,app->record_enabled?"SD WAV":"Speaker");
+        if(app->testing_speaker)snprintf(line,sizeof(line),"Speaker test");
+        if(app->error){state="RX error";snprintf(line,sizeof(line),"OK to retry");}
+        else if(app->sd_error || app->settings_error)snprintf(line,sizeof(line),"SD error");
+        else if((int32_t)(app->notice_until-furi_get_tick())>0)snprintf(line,sizeof(line),"%.18s",app->notice);
+        pmr_ui_radio(canvas,"RADIO",app->channel,app->rssi_dbm,state,line);
+        if(!app->recording && !app->saving) {elements_button_left(canvas,"Config");elements_button_right(canvas,"Tests");}
+        elements_button_center(canvas,app->armed?"Pause":"Listen");
     }
     furi_mutex_release(app->mutex);
 }
@@ -1177,7 +1159,7 @@ int32_t pmr_capture_app(void* args) {
                 bad_reads=0;
                 update_signal(app,(int8_t)raw);
                 stable_signal=app->receiving?(stable_signal<3?stable_signal+1:3):0;
-                if(app->armed && stable_signal>=3 && !app->error) {
+                if(app->armed && stable_signal>=3 && !app->error && !app->menu_open && !app->tests_open && !app->help_open) {
                     furi_mutex_acquire(app->mutex,FuriWaitForever);
                     app->triggers++;
                     furi_mutex_release(app->mutex);
@@ -1232,33 +1214,35 @@ int32_t pmr_capture_app(void* args) {
             furi_mutex_release(app->mutex);
         }
         else if(event.kind==0 && event.input.type==InputTypeLong && event.input.key==InputKeyOk) {
-            if(!app->menu_open && !app->help_open) radio_test(app,true);
+            if(!app->menu_open && !app->tests_open && !app->help_open) radio_test(app,true);
         }
         else if(event.kind==0 && (event.input.type==InputTypeShort || event.input.type==InputTypeRepeat)) {
             InputKey key=event.input.key;
             bool short_press=event.input.type==InputTypeShort;
             if(app->help_open) {
                 if(short_press && (key==InputKeyBack || key==InputKeyOk)) app->help_open=false;
-            } else if(app->menu_open) {
-                if(key==InputKeyUp) app->menu_index=(app->menu_index+5)%6;
-                else if(key==InputKeyDown) app->menu_index=(app->menu_index+1)%6;
-                else if(key==InputKeyBack && short_press) app->menu_open=false;
-                else if(key==InputKeyOk && short_press) {
-                    uint32_t item=app->menu_index;app->menu_open=false;
-                    if(item==0 || item==3) radio_test(app,item==0);
-                    else if(item==1) set_recording_option(app,!app->record_enabled);
-                    else if(item==2) {app->armed=!app->armed;if(app->armed) app->error=!configure_radio(app,app->profile,false);}
-                    else if(item==4) speaker_test(app);
-                    else if(item==5) app->help_open=true;
+            } else if(app->menu_open || app->tests_open) {
+                uint32_t count=app->tests_open?3:5;
+                if(key==InputKeyUp)app->menu_index=(app->menu_index+count-1)%count;
+                else if(key==InputKeyDown)app->menu_index=(app->menu_index+1)%count;
+                else if(key==InputKeyBack && short_press){app->menu_open=false;app->tests_open=false;}
+                else if(app->tests_open && key==InputKeyOk && short_press) {
+                    uint32_t item=app->menu_index;app->tests_open=false;
+                    if(item<2)radio_test(app,item==0);else speaker_test(app);
+                } else if(app->menu_open && (key==InputKeyLeft || key==InputKeyRight || (key==InputKeyOk && short_press))) {
+                    uint32_t item=app->menu_index;bool increase=key!=InputKeyLeft;
+                    if(item==0)change_channel(app,increase?(app->channel%16+1):(app->channel==1?16:app->channel-1));
+                    else if(item==1)volume_key(app,increase?InputKeyUp:InputKeyDown);
+                    else if(item==2)set_recording_option(app,!app->record_enabled);
+                    else if(item==3){app->armed=!app->armed;if(app->armed)app->error=!configure_radio(app,app->profile,false);}
+                    else if(key==InputKeyOk && short_press)app->help_open=true;
                 }
             } else {
                 volume_key(app,key);
-                if(key==InputKeyBack && short_press) running=false;
-                else if(key==InputKeyOk && short_press) {app->menu_open=true;app->menu_index=0;}
-                else if(key==InputKeyLeft || key==InputKeyRight) {
-                    uint32_t next=key==InputKeyLeft?(app->channel==1?16:app->channel-1):(app->channel==16?1:app->channel+1);
-                    change_channel(app,next);
-                }
+                if(key==InputKeyBack && short_press)running=false;
+                else if(key==InputKeyOk && short_press){app->armed=!app->armed;if(app->armed)app->error=!configure_radio(app,app->profile,false);}
+                else if(key==InputKeyLeft && short_press){app->menu_open=true;app->menu_index=0;}
+                else if(key==InputKeyRight && short_press){app->tests_open=true;app->menu_index=0;}
             }
             view_port_update(app->view);
         }

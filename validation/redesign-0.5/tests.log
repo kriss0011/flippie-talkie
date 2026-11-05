@@ -1,0 +1,29 @@
+
+> flippie-talkie@0.5.0 test
+> node --test tests/*.test.js
+
+✔ Microphone resamples 44100 Hz continuously to 6000 Hz (37.061125ms)
+✔ Microphone resamples 48000 Hz continuously to 6000 Hz (38.346666ms)
+✔ C and JavaScript encode and decode match sample for sample (306.413459ms)
+✔ Independent FFmpeg IMA WAV decoder agrees (70.22975ms)
+✔ Parser handles arbitrary BLE/USB splits and noise without losing frames (0.405791ms)
+✔ Malformed audio is rejected (0.218833ms)
+✔ Continuous 3200 Hz receive at 44100 Hz survives recurring 180 ms delivery stalls (31.037667ms)
+✔ Continuous 3200 Hz receive at 48000 Hz survives recurring 180 ms delivery stalls (24.935458ms)
+✔ Continuous 4000 Hz receive at 44100 Hz survives recurring 180 ms delivery stalls (28.014458ms)
+✔ Continuous 4000 Hz receive at 48000 Hz survives recurring 180 ms delivery stalls (28.0095ms)
+✔ Clock mismatch -0.003 stays bounded for two minutes (36.507792ms)
+✔ Clock mismatch 0.003 stays bounded for two minutes (36.479125ms)
+✔ Packet loss is counted, duplicates ignored and short tails drain (2.23025ms)
+✔ All 16 voice assets preserve checksum, bits and finite timing (428.409084ms)
+✔ Tone test terminates after exactly 5.4 seconds (131.520708ms)
+✔ Receive gate holds stable carriers and releases on carrier loss (190.926208ms)
+✔ Unified preferences migrate legacy settings and reject corruption and invalid values (153.269458ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 966.181125

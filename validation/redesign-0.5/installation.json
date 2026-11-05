@@ -1,0 +1,18 @@
+{
+  "version": "0.5",
+  "app": "/ext/apps/Sub-GHz/Flippie_Talkie.fap",
+  "size": 53788,
+  "sha256": "fe1934b9ad28f6ac9e6d05414d5476aa66d263b7210108c11ea1b4ee1f399946",
+  "readback_verified": true,
+  "app_inventory": "[F] esubghz_chat.fap 30904b\r\n\t[F] protoview.fap 53980b\r\n\t[F] spectrum_analyzer.fap 14232b\r\n\t[F] subghz_bruteforcer.fap 60772b\r\n\t[F] subghz_playlist.fap 16572b\r\n\t[F] subghz_remote.fap 45328b\r\n\t[F] subghz_remote_ofw.fap 48376b\r\n\t[F] Flippie_Talkie.fap 53788b",
+  "rollback": [
+    "/ext/apps_data/pmr_radio/Flippie_Talkie_0.4.bak",
+    "/ext/apps_data/pmr_radio/Flippie_Talkie_Radio_0.18.bak"
+  ],
+  "local_backup": "local/device-backup/",
+  "firmware_flashed": false,
+  "rollback_sha256_verified": {
+    "Flippie_Talkie_0.4.bak": "1b25f2b12f50c81d0b8fa317448be56251ba73749ac04cd7b10217f94324d37a",
+    "Flippie_Talkie_Radio_0.18.bak": "be37ae86be5d6f2833912c7e7eb08f321303f65c5b5a39cd800c173c91bff946"
+  }
+}

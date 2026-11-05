@@ -9,7 +9,7 @@ for (const [source, voiceAssets] of [['test_pmr_radio_core.c', true], ['test_pmr
     const temp = mkdtempSync(join(tmpdir(), 'pmr-radio-'));
     try {
       const binary = join(temp, 'check');
-      execFileSync(process.env.CC || 'cc', ['-std=c11', '-Wall', '-Wextra', '-Werror', '-I', resolve('firmware/pmr_capture'), `tests/${source}`, '-o', binary]);
+      execFileSync(process.env.CC || 'cc', ['-std=c11', '-Wall', '-Wextra', '-Werror', '-I', resolve('firmware/flippie_talkie'), `tests/${source}`, '-o', binary]);
       const assets = voiceAssets ? Array.from({length:16}, (_, i) => `sd/apps_data/pmr_radio/voice/ch${String(i + 1).padStart(2,'0')}.pdm`) : [];
       execFileSync(binary, assets);
     } finally {
@@ -22,7 +22,16 @@ test('Receive gate holds stable carriers and releases on carrier loss', () => {
   const temp = mkdtempSync(join(tmpdir(), 'pmr-gate-'));
   try {
     const binary = join(temp, 'check');
-    execFileSync(process.env.CC || 'cc', ['-std=c11', '-Wall', '-Wextra', '-Werror', '-I', resolve('firmware/pmr_connect'), 'tests/test_rx_gate.c', '-o', binary]);
+    execFileSync(process.env.CC || 'cc', ['-std=c11', '-Wall', '-Wextra', '-Werror', '-I', resolve('firmware/flippie_talkie'), 'tests/test_rx_gate.c', '-o', binary]);
+    execFileSync(binary);
+  } finally { rmSync(temp, {recursive:true, force:true}); }
+});
+
+test('Unified preferences migrate legacy settings and reject corruption and invalid values', () => {
+  const temp = mkdtempSync(join(tmpdir(), 'pmr-prefs-'));
+  try {
+    const binary = join(temp, 'check');
+    execFileSync(process.env.CC || 'cc', ['-std=c11', '-Wall', '-Wextra', '-Werror', '-I', resolve('firmware/flippie_talkie'), 'tests/test_preferences.c', '-o', binary]);
     execFileSync(binary);
   } finally { rmSync(temp, {recursive:true, force:true}); }
 });

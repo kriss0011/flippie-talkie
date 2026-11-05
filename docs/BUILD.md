@@ -30,7 +30,7 @@ python -m pip install -r requirements.txt
 
 The ranges in `requirements.txt` describe supported dependencies, not an exact environment lock. The original capture data, source and validation results are retained so results can be compared when dependencies change.
 
-## Build the two FAPs
+## Build the unified FAP
 
 The known-good firmware base is:
 
@@ -47,7 +47,7 @@ bash tools/setup_sdk.sh
 bash tools/build.sh
 ```
 
-`setup_sdk.sh` clones the pinned firmware into `.cache/xtreme-firmware` and initializes its library/protobuf submodules. It deliberately skips the unrelated external-app catalogue. `build.sh` copies the two source directories into `applications_user/`, calls the firmware's `fbt` build tool, and copies the resulting apps and existing voice assets into `build/sd/`. On first use `fbt` downloads its versioned toolchain; this requires internet access and substantial disk space. Its “applications/external: missing manifest” warning is expected when skipping the catalogue. Both FAP build checks must still succeed.
+`setup_sdk.sh` clones the pinned firmware into `.cache/xtreme-firmware` and initializes its library/protobuf submodules. It deliberately skips the unrelated external-app catalogue. `build.sh` copies the unified source directory into `applications_user/`, calls the firmware's `fbt` build tool, and copies the resulting app and existing voice assets into `build/sd/`. On first use `fbt` downloads its versioned toolchain; this requires internet access and substantial disk space. Its “applications/external: missing manifest” warning is expected when skipping the catalogue. The FAP build check must still succeed.
 
 Install the contents of `build/sd/` using the README procedure. The build command does **not** flash firmware or install anything on the connected Flipper. The supplied releases remain untouched. A native Windows firmware build was not verified; use a suitable macOS/Linux build environment or the supplied matching-API FAPs.
 
@@ -59,16 +59,15 @@ bash tools/setup_sdk.sh
 bash tools/build.sh
 ```
 
-The scripts reject a different revision and will not overwrite differing app sources in an existing SDK. For iterative changes, edit `firmware/` in this repository, then move aside the previous `applications_user/pmr_capture` and `applications_user/pmr_connect` copies before rebuilding. This protects separate edits in another checkout. SDK/toolchain/build outputs are ignored by Git.
+The scripts reject a different revision and will not overwrite differing app sources in an existing SDK. For iterative changes, edit `firmware/` in this repository, then move aside the previous `applications_user/flippie_talkie` copy before rebuilding. This protects separate edits in another checkout. SDK/toolchain/build outputs are ignored by Git.
 
-To build manually, copy `firmware/pmr_capture` and `firmware/pmr_connect` into the SDK's `applications_user/`, initialize the required submodules, and run these from the SDK root:
+To build manually, copy `firmware/flippie_talkie` into the SDK's `applications_user/`, initialize the required submodules, and run these from the SDK root:
 
 ```sh
-FBT_NO_SYNC=1 ./fbt build APPSRC=applications_user/pmr_capture
-FBT_NO_SYNC=1 ./fbt build APPSRC=applications_user/pmr_connect
+FBT_NO_SYNC=1 ./fbt build APPSRC=applications_user/flippie_talkie
 ```
 
-The outputs are `build/f7-firmware-C/.extapps/pmr_capture.fap` and `pmr_connect.fap`. Filename `pmr_capture` is historical; the app is displayed as Flippie Talkie Radio.
+The output is `build/f7-firmware-C/.extapps/flippie_talkie.fap`, packaged as `Flippie_Talkie.fap`. The two radio engines are internal modules of this single app.
 
 ## Generate spoken channel prompts
 

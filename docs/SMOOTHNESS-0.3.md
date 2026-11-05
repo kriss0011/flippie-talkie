@@ -1,3 +1,5 @@
+> Historical two-app documentation. Version 0.5 merges both modes; see the [current controls](../README.md) and [merge validation](REDESIGN-0.5.md).
+
 # PMR Connect 0.3 — short receive-audio cuts
 
 The user confirmed that the interface works in Bluefy on iPhone, but received audio briefly cut out every few seconds. This update targets continuity, not increased RF range or louder gain.
