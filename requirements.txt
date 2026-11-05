@@ -1,0 +1,7 @@
+# Optional tools only; no Python packages are needed to serve the web UI.
+numpy>=1.26,<3
+scipy>=1.11,<2
+pyserial>=3.5,<4
+# Used by the historical Bluetooth diagnostics:
+bleak>=0.22,<3
+Pillow>=10,<13

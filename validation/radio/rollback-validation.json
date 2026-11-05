@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "recorded_pcm_bit_identical_to_v16": true,
+  "speaker_pwm_bit_identical_to_pre_boost_v12": true,
+  "volumes_checked": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "recorded_samples": 125783,
+  "mute_and_dc_silence": true,
+  "limitation": "No claim of improved RF signal quality. This removes speaker compression and treble boost, returning to quieter original playback."
+}

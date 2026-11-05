@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "dsp_max_pcm_error": 1.0065634565062282,
+  "duration_s": 12.0,
+  "steady_level_spread": 0.0,
+  "wav_data_offset": 512
+}

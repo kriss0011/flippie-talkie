@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-11-05",
+  "offline_tests_passed": 8,
+  "firmware_sdk": "6523edcc65af2fa1a72e0dc3b0bb1f9929744877",
+  "sdk_setup_check": "passed against existing pinned SDK; recursive dependencies initialized",
+  "fap_build_check": "both passed with existing SDK/toolchain; no clean-machine toolchain-download claim",
+  "built_faps_match_supplied_release_bytes": true,
+  "regenerated_voice_assets_match": 16,
+  "raw_capture_decode": "PMRCAP3 full-duration example succeeded",
+  "release_checksums_verified": 37,
+  "historical_files_verified": 716,
+  "markdown_local_links": "passed",
+  "credential_scan": "known token/private-key patterns checked in 808 files and 371 ZIP members; no findings",
+  "hardware_access_during_packaging": false,
+  "limitations": "No new phone, RF range, sustained listening or SD reliability test performed during packaging."
+}

@@ -1,0 +1,11 @@
+App(
+    appid="pmr_capture",
+    name="PMR Radio",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="pmr_capture_app",
+    stack_size=4096,
+    fap_category="Sub-GHz",
+    fap_version=(0, 17),
+    fap_description="16 PMR channels, live speaker, SD WAV recording and spoken channel tests",
+    fap_author="Local experiment",
+)

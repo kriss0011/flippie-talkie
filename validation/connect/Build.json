@@ -1,0 +1,11 @@
+{
+  "version": "0.2",
+  "protocol": 2,
+  "site": "https://pmr-connect-dobby.kriss0011.chatgpt.site",
+  "site_commit": "12bca2fdc0b95a8e1190d392a9a6321eedc867a8",
+  "fap_sha256": "9f17d56783808fbbb0620b6a41f082f0c7cbd79414782cd62f13ecd905f162e2",
+  "rx_rate": 4000,
+  "tx_rate": 6000,
+  "tested_platform": "macOS native BLE and Chrome; USB serial",
+  "phone_audio_tested": false
+}

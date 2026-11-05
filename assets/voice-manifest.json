@@ -1,0 +1,146 @@
+[
+  {
+    "channel": 1,
+    "text": "Testing channel 1.",
+    "file": "ch01.pdm",
+    "bytes": 12053,
+    "seconds": 2.00475,
+    "md5": "d9d7be521b3a12098c1f4aa1cb7bfb64",
+    "peak": 0.85
+  },
+  {
+    "channel": 2,
+    "text": "Testing channel 2.",
+    "file": "ch02.pdm",
+    "bytes": 11775,
+    "seconds": 1.958375,
+    "md5": "fbc56267c25e917266aad59ef97a1654",
+    "peak": 0.85
+  },
+  {
+    "channel": 3,
+    "text": "Testing channel 3.",
+    "file": "ch03.pdm",
+    "bytes": 12053,
+    "seconds": 2.00475,
+    "md5": "e8ecfb2d50ef299e862f536e4392140f",
+    "peak": 0.85
+  },
+  {
+    "channel": 4,
+    "text": "Testing channel 4.",
+    "file": "ch04.pdm",
+    "bytes": 11775,
+    "seconds": 1.958375,
+    "md5": "8f3e9969c2e6be8681a3cce65739f17d",
+    "peak": 0.85
+  },
+  {
+    "channel": 5,
+    "text": "Testing channel 5.",
+    "file": "ch05.pdm",
+    "bytes": 12123,
+    "seconds": 2.016375,
+    "md5": "00d5b14e013d340fde81585015495942",
+    "peak": 0.85
+  },
+  {
+    "channel": 6,
+    "text": "Testing channel 6.",
+    "file": "ch06.pdm",
+    "bytes": 12540,
+    "seconds": 2.086,
+    "md5": "5c10f4a70c7d75a705a14487cdea75ed",
+    "peak": 0.85
+  },
+  {
+    "channel": 7,
+    "text": "Testing channel 7.",
+    "file": "ch07.pdm",
+    "bytes": 12332,
+    "seconds": 2.05125,
+    "md5": "5a6fbdbb83822bc45459bfc55f34189a",
+    "peak": 0.85
+  },
+  {
+    "channel": 8,
+    "text": "Testing channel 8.",
+    "file": "ch08.pdm",
+    "bytes": 11635,
+    "seconds": 1.935125,
+    "md5": "f2dbecccedf8344b5b763dd5f4020dfc",
+    "peak": 0.8499999999999999
+  },
+  {
+    "channel": 9,
+    "text": "Testing channel 9.",
+    "file": "ch09.pdm",
+    "bytes": 12262,
+    "seconds": 2.039625,
+    "md5": "594673fac534b33d0486772a0aedc247",
+    "peak": 0.85
+  },
+  {
+    "channel": 10,
+    "text": "Testing channel 10.",
+    "file": "ch10.pdm",
+    "bytes": 12123,
+    "seconds": 2.016375,
+    "md5": "22cb65222affe14d39b3eaad1f68a701",
+    "peak": 0.85
+  },
+  {
+    "channel": 11,
+    "text": "Testing channel 11.",
+    "file": "ch11.pdm",
+    "bytes": 12332,
+    "seconds": 2.05125,
+    "md5": "930827d98ebf4c8346631fcafc946c8e",
+    "peak": 0.8500000000000001
+  },
+  {
+    "channel": 12,
+    "text": "Testing channel 12.",
+    "file": "ch12.pdm",
+    "bytes": 12332,
+    "seconds": 2.05125,
+    "md5": "b24b02c0ea6b16a5266e53a6e063864b",
+    "peak": 0.85
+  },
+  {
+    "channel": 13,
+    "text": "Testing channel 13.",
+    "file": "ch13.pdm",
+    "bytes": 13307,
+    "seconds": 2.21375,
+    "md5": "7778a07f8ed5060cb1d3e7cef59f3c0e",
+    "peak": 0.85
+  },
+  {
+    "channel": 14,
+    "text": "Testing channel 14.",
+    "file": "ch14.pdm",
+    "bytes": 13655,
+    "seconds": 2.27175,
+    "md5": "08816d4114a012251557d5459180f909",
+    "peak": 0.8499999999999999
+  },
+  {
+    "channel": 15,
+    "text": "Testing channel 15.",
+    "file": "ch15.pdm",
+    "bytes": 13377,
+    "seconds": 2.225375,
+    "md5": "fb8a8557e8124c52c3e91670ac94d7d7",
+    "peak": 0.85
+  },
+  {
+    "channel": 16,
+    "text": "Testing channel 16.",
+    "file": "ch16.pdm",
+    "bytes": 13864,
+    "seconds": 2.306625,
+    "md5": "1a32dfd272d943b86aa0a1fc1ad81ab7",
+    "peak": 0.85
+  }
+]

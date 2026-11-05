@@ -1,0 +1,109 @@
+{
+  "statuses": [
+    {
+      "time": 1.871,
+      "channel": 9,
+      "state": 0,
+      "epoch": 0,
+      "error": 0,
+      "buffered": 0,
+      "rx_dropped": 0,
+      "underruns": 0,
+      "tx_dropped": 0
+    },
+    {
+      "time": 1.96,
+      "channel": 9,
+      "state": 0,
+      "epoch": 0,
+      "error": 0,
+      "buffered": 0,
+      "rx_dropped": 0,
+      "underruns": 0,
+      "tx_dropped": 0
+    },
+    {
+      "time": 2.232,
+      "channel": 9,
+      "state": 3,
+      "epoch": 7,
+      "error": 0,
+      "buffered": 0,
+      "rx_dropped": 0,
+      "underruns": 0,
+      "tx_dropped": 0
+    },
+    {
+      "time": 2.291,
+      "channel": 9,
+      "state": 3,
+      "epoch": 7,
+      "error": 0,
+      "buffered": 321,
+      "rx_dropped": 0,
+      "underruns": 0,
+      "tx_dropped": 0
+    },
+    {
+      "time": 2.352,
+      "channel": 9,
+      "state": 4,
+      "epoch": 7,
+      "error": 0,
+      "buffered": 561,
+      "rx_dropped": 0,
+      "underruns": 0,
+      "tx_dropped": 0
+    },
+    {
+      "time": 3.283,
+      "channel": 9,
+      "state": 4,
+      "epoch": 7,
+      "error": 0,
+      "buffered": 446,
+      "rx_dropped": 0,
+      "underruns": 0,
+      "tx_dropped": 0
+    },
+    {
+      "time": 4.302,
+      "channel": 9,
+      "state": 4,
+      "epoch": 7,
+      "error": 0,
+      "buffered": 500,
+      "rx_dropped": 0,
+      "underruns": 0,
+      "tx_dropped": 0
+    },
+    {
+      "time": 4.781,
+      "channel": 9,
+      "state": 0,
+      "epoch": 7,
+      "error": 5,
+      "buffered": 0,
+      "rx_dropped": 0,
+      "underruns": 1980,
+      "tx_dropped": 0
+    },
+    {
+      "time": 5.29,
+      "channel": 9,
+      "state": 0,
+      "epoch": 7,
+      "error": 5,
+      "buffered": 0,
+      "rx_dropped": 0,
+      "underruns": 1980,
+      "tx_dropped": 0
+    }
+  ],
+  "last_audio_at": 4.268150374991819,
+  "max_write_ms": 3.40587500249967,
+  "mean_write_ms": 0.4014807174173303,
+  "audio_blocks": 39,
+  "watchdog_stopped": true,
+  "transport": "write_without_response"
+}

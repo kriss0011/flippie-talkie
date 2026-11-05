@@ -1,0 +1,11 @@
+App(
+    appid="pmr_connect",
+    name="PMR Connect",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="pmr_connect_app",
+    stack_size=6144,
+    fap_category="Sub-GHz",
+    fap_version=(0, 2),
+    fap_description="Bluetooth or USB live PMR audio and browser push-to-talk",
+    fap_author="Local experiment",
+)
