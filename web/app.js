@@ -1,11 +1,11 @@
 import {RATE,RX_RATE,SAMPLES,encode,decode,frame,Parser} from './codec.js';
 import {BluetoothLink,USBLink} from './transports.js';
 const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
-let link,ready=false,connecting=false,status,lastStatus=0,heartbeat,monitor,ctx,output,playAt=0,sources=new Set(),micStream,micNode,micReady=false,held=false,transmitting=false,epoch=0,seq=0,encoder={index:0},pending=0,operation=0,rxSequence=null,received=0,lost=0,wakeLock;
+let link,ready=false,connecting=false,status,lastStatus=0,heartbeat,monitor,ctx,output,speaker,playback={},micStream,micNode,micReady=false,held=false,transmitting=false,epoch=0,seq=0,encoder={index:0},pending=0,operation=0,rxSequence=null,received=0,lost=0,wakeLock;
 for(let i=1;i<=16;i++)$('channel').add(new Option(String(i).padStart(2,'0'),i));$('channel').value='9';
 const errors={1:'This channel is busy. Wait for the other radio to finish.',2:'This Flipper’s firmware does not allow transmission on this channel.',3:'Finish talking before changing channel.',4:'The radio could not start. Reconnect and try again.',5:'Audio stopped or the connection timed out. Press again to resume.',8:'An audio packet was damaged.',9:'The connection could not keep up. Move closer to the Flipper.'};
 function notice(text=''){ $('notice').textContent=text;$('notice').hidden=!text; }
-function clearPlayback(){for(const s of sources){try{s.stop();}catch{}}sources.clear();playAt=0;rxSequence=null;}
+function clearPlayback(){speaker?.port.postMessage({type:'reset'});rxSequence=null;}
 function render(){
   document.body.classList.toggle('connected',ready);
   const channel=status?.channel||Number($('channel').value),live=ready&&status;
@@ -20,28 +20,35 @@ function render(){
   const names=['Listening paused','Listening','Receiving','Preparing microphone','Transmitting'];
   $('radio-state').textContent=live?names[status.state]||'Connected':'Connect to use your radio';$('state-dot').classList.toggle('live',!!live&&status.state>=2);
   $('signal').textContent=live&&status.rssi>-127?`${status.rssi} dBm`:'No signal reading';
-  $('diagnostics').textContent=live?`${RX_RATE/1000} kHz receive / ${RATE/1000} kHz talk · Received ${received} blocks · Lost ${lost} · Device drops ${status.dropped} · Microphone gaps ${status.underruns}`:'No live connection.';
+  $('diagnostics').textContent=live?`${(status.rxRate||RX_RATE)/1000} kHz receive / ${RATE/1000} kHz talk · Received ${received} blocks · Lost ${lost} · Device drops ${status.dropped} · Playback gaps ${playback.underruns||0} · Buffer ${playback.bufferedMs||0} ms · Microphone gaps ${status.underruns}`:'No live connection.';
 }
-async function audio(){if(!ctx){ctx=new AudioContext({latencyHint:'interactive'});output=ctx.createGain();output.gain.value=Number($('volume').value)/100;output.connect(ctx.destination);}await ctx.resume();}
+async function audio(){
+  if(!ctx){ctx=new AudioContext({latencyHint:'interactive'});output=ctx.createGain();output.gain.value=Number($('volume').value)/100;output.connect(ctx.destination);}
+  await ctx.resume();
+  if(!speaker){await ctx.audioWorklet.addModule('./speaker-worklet.js');speaker=new AudioWorkletNode(ctx,'radio-speaker',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[1]});speaker.connect(output);speaker.port.onmessage=({data})=>{playback=data;};}
+}
 function receive(packet){
   if(packet.type===0x81||packet.type===0x82)lastStatus=performance.now();
   if(packet.type===0x81&&packet.data.length===26){
-    const b=packet.data,v=new DataView(b.buffer,b.byteOffset,b.length);if(b[7]!==2||v.getUint16(10,true)!==RATE||v.getUint16(24,true)!==RX_RATE){notice('This app needs the matching PMR Connect version on the Flipper.');return;}
-    const previousError=status?.error;status={channel:b[0],mode:b[1],state:b[2],listening:!!b[3],rssi:v.getInt8(4),epoch:b[5],error:b[6],buffered:v.getUint16(8,true),dropped:v.getUint32(12,true),underruns:v.getUint32(16,true)};lastStatus=performance.now();
+    const b=packet.data,v=new DataView(b.buffer,b.byteOffset,b.length);if(![2,3].includes(b[7])||v.getUint16(10,true)!==RATE||![3200,4000].includes(v.getUint16(24,true))){notice('This app needs the matching PMR Connect version on the Flipper.');return;}
+    const previousError=status?.error,previousState=status?.state;status={rxRate:v.getUint16(24,true),channel:b[0],mode:b[1],state:b[2],listening:!!b[3],rssi:v.getInt8(4),epoch:b[5],error:b[6],buffered:v.getUint16(8,true),dropped:v.getUint32(12,true),underruns:v.getUint32(16,true)};lastStatus=performance.now();
     if(!ready){ready=true;connecting=false;notice();}
     $('channel').value=String(status.channel);
     if(status.error)notice(errors[status.error]||`Radio status ${status.error}`);else if(previousError)notice();
-    if((status.state===0||status.state===1||status.state===4)&&sources.size&&status.state!==1)clearPlayback();
+    speaker?.port.postMessage({type:'rate',rate:status.rxRate});
+    if(status.state!==previousState){
+      if(status.state===0||status.state>=3)clearPlayback();
+      else speaker?.port.postMessage({type:status.state===2?'begin':'end'});
+    }
     if(transmitting&&status.epoch===epoch&&status.state<3)stopTalk(false);
     render();return;
   }
   if(packet.type!==0x82||!ready||!status?.listening||held||!ctx||ctx.state!=='running')return;
   try{
-    const pcm=decode(packet.data),buffer=ctx.createBuffer(1,SAMPLES,RX_RATE),samples=buffer.getChannelData(0);for(let i=0;i<SAMPLES;i++)samples[i]=pcm[i]/32768;
-    if(rxSequence!==null){const gap=(packet.sequence-rxSequence-1)&65535;if(gap>0&&gap<1000){lost+=gap;playAt+=Math.min(gap,3)*SAMPLES/RX_RATE;}}
-    rxSequence=packet.sequence;received++;const now=ctx.currentTime;
-    if(playAt<now+.015||playAt>now+.35){clearPlayback();rxSequence=packet.sequence;playAt=now+.10;}
-    const source=ctx.createBufferSource();source.buffer=buffer;source.connect(output);source.onended=()=>sources.delete(source);sources.add(source);source.start(playAt);playAt+=SAMPLES/RX_RATE;
+    const pcm=decode(packet.data);
+    if(rxSequence!==null){const gap=(packet.sequence-rxSequence-1)&65535;if(gap>0&&gap<1000)lost+=gap;}
+    rxSequence=packet.sequence;received++;
+    speaker.port.postMessage({type:'audio',pcm,sequence:packet.sequence},[pcm.buffer]);
   }catch(e){notice(e.message);}
 }
 async function send(type,payload=new Uint8Array(),e=epoch){if(!link)throw Error('Connect your Flipper first.');return link.write(frame(type,payload,e,seq++));}

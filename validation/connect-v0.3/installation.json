@@ -1,0 +1,8 @@
+{
+  "before": "version=2 mode=0 connected=0 attached=0 channel=9 state=0 listen=0 rssi=-101 error=0 rx_dropped=233 tx_dropped=0 underruns=0 tx_tests=3 tx_marcstate=19 read_errors=0 bt_active=1 bt_phy=0 bt_ready=0 ble_packets=749 ble_ms=53202 ble_max=202",
+  "previous_md5": "52bbafd3a578d28f0b91abf44ad42717",
+  "after": "version=3 mode=0 connected=0 attached=0 channel=9 state=0 listen=0 rssi=-127 error=0 rx_dropped=0 tx_dropped=0 underruns=0 tx_tests=0 tx_marcstate=0 read_errors=0 bt_active=1 bt_phy=0 bt_ready=0 ble_packets=0 ble_ms=0 ble_max=0\r\nrx_rate=3200 carrier_checks=0 sample_drops=0 queue_drops=0 ble_timeouts=0 ble_failures=0 audio_floor=-99 gate_reference=0 gate_ambiguous=0",
+  "backup": "/ext/apps_data/pmr_radio/PMR_Connect_v02_before_v03.fap",
+  "installed_md5": "4b09d7cb729e3ac651dd4cab3338bf29",
+  "sha256": "fb537d6301ac5d953b58046357d1933e42afba105d1ec46d5221a6afa9ba107d"
+}

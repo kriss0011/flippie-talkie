@@ -1,6 +1,6 @@
 # Flipper PMR Radio
 
-Experimental 16-channel PMR446 radio apps for Flipper Zero: **PMR Connect 0.2** uses a computer/phone as the microphone and speaker over Bluetooth or USB; **PMR Radio 0.17** runs on the Flipper itself with speaker playback, automatic SD WAV recording, and spoken channel tests.
+Experimental 16-channel PMR446 radio apps for Flipper Zero: **PMR Connect 0.3** uses a computer/phone as the microphone and speaker over Bluetooth or USB; **PMR Radio 0.17** runs on the Flipper itself with speaker playback, automatic SD WAV recording, and spoken channel tests.
 
 This repository contains the working app sources, installable binaries, web interface, all 16 voice prompts, host tools, validation reports, and the earlier radio experiments and full recordings. It preserves the project as tested on 5 November 2026.
 
@@ -15,6 +15,8 @@ This repository contains the working app sources, installable binaries, web inte
 | Install both apps without building | Copy the contents of [`sd/`](sd) to the Flipper SD card |
 | Compile or change the apps | [Build instructions](docs/BUILD.md) |
 | Hear previous tests / inspect raw captures | [`archive/outputs/`](archive/outputs) and [experiment guide](docs/EXPERIMENTS.md) |
+
+See [the v0.3 change and validation report](docs/SMOOTHNESS-0.3.md) for the receive-audio fixes.
 
 The hosted interface is a private ChatGPT Site and requires the owner's sign-in. It is independent of GitHub hosting. You can run the same interface locally or host `web/` yourself.
 
@@ -57,10 +59,10 @@ This is half-duplex: transmitting temporarily stops reception. The host sends mi
 | Mac | Chrome, Bluetooth or USB | Bluetooth listening confirmed by user; transport/USB bench tests passed |
 | Windows | Chrome, Bluetooth; Chrome/Edge, USB | Platform capability; not tested here |
 | Android | Chrome, Bluetooth | Platform capability; not tested here |
-| iPhone / iPad | [Bluefy](https://bluefy.app/), Bluetooth | Candidate path; microphone + playback + PTT still need testing on a phone |
+| iPhone / iPad | [Bluefy](https://bluefy.app/), Bluetooth | Basic operation confirmed by the user in Bluefy; v0.3 smoothness retest pending |
 | Safari | No direct Web Bluetooth path | Use a compatible browser |
 
-There is no verified universal browser path across all phones yet. Chrome documents its supported Web Bluetooth platforms [here](https://developer.chrome.com/docs/capabilities/bluetooth); Bluefy documents its iOS BLE browser [here](https://bluefy.app/).
+The user has confirmed basic operation in Bluefy on iPhone. Other untested phone/browser combinations are not guaranteed. Chrome documents its supported Web Bluetooth platforms [here](https://developer.chrome.com/docs/capabilities/bluetooth); Bluefy documents its iOS BLE browser [here](https://bluefy.app/).
 
 ### USB fallback
 
@@ -112,10 +114,10 @@ Version 0.17 restores the earlier, quieter speaker mapping: additional compressi
 - All 16 analogue PMR446 channels are selectable: `446006250 + (channel - 1) * 12500` Hz. The Motorola T72 test used channel 9, privacy code off.
 - The spoken channel-9 transmission was reported clear on the Motorola, including a test three floors away. This is a user-reported result, not a measured range specification.
 - Reception uses the CC1101's RSSI response as an experimental FM slope detector. It is noisy and is not equivalent to a purpose-built narrowband FM receiver or SDR with IQ samples. Software filtering has not produced consistently clear long-range reception.
-- Bluetooth receive audio is 4 kHz mono; microphone transmit audio is 6 kHz mono. The lower downlink rate was chosen after 6 kHz exceeded the tested indication throughput.
-- Final BLE capacity test: 99/99 representative audio-size packets, no drops. Streaming transmit test: no underflow while audio was flowing; deliberately omitting STOP shut RF down approximately 0.51 seconds after the last host write. See [validation](docs/VALIDATION.md).
+- Receive audio is 3.2 kHz mono over Bluetooth and 4 kHz over USB; microphone transmit audio stays at 6 kHz. Version 0.3 reduces Bluetooth load and uses a continuous playback buffer (about 240 ms) to tolerate phone delivery jitter instead of repeatedly clearing scheduled audio.
+- Version 0.3 BLE capacity test: 80/80 representative audio-size packets, no drops. The earlier 0.2 test delivered 99/99 at its higher rate. Streaming transmit test: no underflow while audio was flowing; deliberately omitting STOP shut RF down approximately 0.51 seconds after the last host write. See [validation](docs/VALIDATION.md).
 - One standalone SD write stalled for about a second and lost samples. A repeat check passed. That intermittent storage issue is **not proven fixed**.
-- Phone audio and sustained real-world operation of the final build still need listening tests. Do not treat a successful desktop transport bench as a phone/range test.
+- The user reported that iPhone/Bluefy works but v0.2 reception cuts briefly every few seconds. Version 0.3 addresses transport load, playback resets and unnecessary carrier rechecks; sustained iPhone listening with this update still needs confirmation. A desktop transport bench is not a phone/range test.
 
 The apps retain the firmware's transmit-frequency permission check. This project does not modify regional restrictions.
 
@@ -128,7 +130,7 @@ npm test
 python3 tools/verify_bundle.py
 ```
 
-`npm test` checks C/JavaScript codec agreement, independent FFmpeg decoding, fragmented packets, microphone resampling, all 16 voice assets, and finite tone/voice timing. These are offline tests and do not transmit. `CC` and `FFMPEG` may name alternative executable paths.
+`npm test` checks C/JavaScript codec agreement, independent FFmpeg decoding, fragmented packets, microphone resampling, all 16 voice assets, finite tone/voice timing, recurring delivery stalls, clock drift and receiver squelch behavior. These are offline tests and do not transmit. `CC` and `FFMPEG` may name alternative executable paths.
 
 To build both Flipper apps:
 
@@ -142,7 +144,7 @@ Fresh binaries land in `build/sd/apps/Sub-GHz/`. Copy them using the same instal
 ## Repository map
 
 ```text
-firmware/pmr_connect/   Bluetooth/USB Flipper app, v0.2
+firmware/pmr_connect/   Bluetooth/USB Flipper app, v0.3
 firmware/pmr_capture/   Standalone PMR Radio app, v0.17 (historical internal name)
 web/                   Self-contained browser interface
 sd/                    Ready-to-copy apps and all 16 spoken-channel assets

@@ -17,3 +17,12 @@ for (const [source, voiceAssets] of [['test_pmr_radio_core.c', true], ['test_pmr
     }
   });
 }
+
+test('Receive gate holds stable carriers and releases on carrier loss', () => {
+  const temp = mkdtempSync(join(tmpdir(), 'pmr-gate-'));
+  try {
+    const binary = join(temp, 'check');
+    execFileSync(process.env.CC || 'cc', ['-std=c11', '-Wall', '-Wextra', '-Werror', '-I', resolve('firmware/pmr_connect'), 'tests/test_rx_gate.c', '-o', binary]);
+    execFileSync(binary);
+  } finally { rmSync(temp, {recursive:true, force:true}); }
+});

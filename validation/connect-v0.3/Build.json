@@ -1,0 +1,16 @@
+{
+  "version": "0.3",
+  "protocol": 3,
+  "site": "https://pmr-connect-dobby.kriss0011.chatgpt.site",
+  "site_commit": "013aee4d7f32021a676f4dfd53ae74a095354072",
+  "fap_sha256": "fb537d6301ac5d953b58046357d1933e42afba105d1ec46d5221a6afa9ba107d",
+  "rx_rate_ble": 3200,
+  "rx_rate_usb": 4000,
+  "tx_rate": 6000,
+  "playback_target_ms": 240,
+  "offline_tests_passed": 16,
+  "ble_test_packets": 80,
+  "ble_test_drops": 0,
+  "iphone_v02_operation_user_confirmed": true,
+  "iphone_v03_smoothness_user_confirmed": false
+}

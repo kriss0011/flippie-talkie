@@ -10,7 +10,7 @@ Open PMR Connect on Flipper and select Bluetooth with OK. Use a supported browse
 
 ## “Connection lost. Transmission has stopped.”
 
-The interface disables talk/listen when contact is lost. Open the app again if it exited, confirm the selected transport matches, then reconnect. Keep the page foreground and the phone awake. Do not run two clients. Version 0.2 prioritizes status messages and uses 4 kHz downlink audio because the earlier 6 kHz BLE downlink could crowd status out. Ensure the web interface and FAP are both from this release.
+The interface disables talk/listen when contact is lost. Open the app again if it exited, confirm the selected transport matches, then reconnect. Keep the page foreground and the phone awake. Do not run two clients. Version 0.3 uses 3.2 kHz Bluetooth downlink audio, prioritizes status, and buffers short timing variations without restarting audible playback. Ensure the web interface and FAP are both from this release.
 
 ## Connected but silent
 
@@ -23,7 +23,7 @@ The interface disables talk/listen when contact is lost. Open the app again if i
 
 ## Speech is quiet or noisy
 
-The receiver is an RSSI slope-detector experiment. Its noise and distortion are real limitations; extra gain makes both speech and noise louder. The standalone 0.17 app restores the original linear speaker mapping. Use the browser/computer speaker for greater playback volume. The 4 kHz downlink also limits voice bandwidth. Better speaker volume is not evidence of better RF sensitivity.
+The receiver is an RSSI slope-detector experiment. Its noise and distortion are real limitations; extra gain makes both speech and noise louder. The standalone 0.17 app restores the original linear speaker mapping. Use the browser/computer speaker for greater playback volume. The 3.2 kHz Bluetooth / 4 kHz USB downlink also limits voice bandwidth. Better speaker volume is not evidence of better RF sensitivity.
 
 ## USB cannot open the port
 
@@ -39,4 +39,4 @@ PMR Radio saves WAV files under `SD/apps_data/pmr_voice/`; PMR Connect does not 
 
 ## Local page works on Mac but not phone
 
-`localhost` on a phone refers to the phone itself. Use the hosted HTTPS interface, or deploy `web/` to your own HTTPS host. Plain LAN HTTP is insufficient. iOS requires a browser exposing Web Bluetooth (Bluefy is the candidate); its actual microphone, playback and talk path has not been verified by this project. A site's sign-in/hosting access and its permission to use nearby Bluetooth hardware are separate steps.
+`localhost` on a phone refers to the phone itself. Use the hosted HTTPS interface, or deploy `web/` to your own HTTPS host. Plain LAN HTTP is insufficient. iOS requires a browser exposing Web Bluetooth (Bluefy is the candidate); the user confirmed basic operation on iPhone, but sustained smooth playback with v0.3 still needs a listening test. A site's sign-in/hosting access and its permission to use nearby Bluetooth hardware are separate steps.

@@ -14,15 +14,23 @@ static inline void pmr_dsp_reset(PmrDsp* dsp) {
     memset(dsp,0,sizeof(*dsp));dsp->clips=clips;
 }
 
-// 8 kHz fourth-order Butterworth 180--1700 Hz, then 450 Hz de-emphasis.
+// 8 kHz fourth-order Butterworth: USB 180--1700 Hz, BLE 180--1400 Hz.
+// Both retain the existing 450 Hz de-emphasis and fixed gain.
 // Fixed gain; bounded, single-precision hardware math in the sampling ISR.
-static inline int16_t pmr_dsp_sample(PmrDsp* dsp,float input) {
-    static const float sos[4][5]={
+static inline int16_t pmr_dsp_sample_rate(PmrDsp* dsp,float input,bool bluetooth) {
+    static const float usb_sos[4][5]={
         {0.03960266265f,0.07920532531f,0.03960266265f,-0.4225871402f,0.1018973798f},
         {1.0f,2.0f,1.0f,-0.3831293958f,0.5216434222f},
         {1.0f,-2.0f,1.0f,-1.720117922f,0.7443408451f},
         {1.0f,-2.0f,1.0f,-1.891021478f,0.9108384466f},
     };
+    static const float ble_sos[4][5]={
+        {0.0195847967f,0.0391695934f,0.0195847967f,-0.7213233429f,0.1880361728f},
+        {1.0f,2.0f,1.0f,-0.741875503f,0.5718788002f},
+        {1.0f,-2.0f,1.0f,-1.712819184f,0.7394073878f},
+        {1.0f,-2.0f,1.0f,-1.894750985f,0.9147429947f},
+    };
+    const float (*sos)[5]=bluetooth?ble_sos:usb_sos;
     if(!dsp->initialized) {dsp->baseline=input;dsp->initialized=true;}
     float x=input-dsp->baseline;
     for(uint32_t i=0;i<4;i++) {

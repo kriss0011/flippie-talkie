@@ -4,11 +4,11 @@
   "firmware_commit": "6523edcc65af2fa1a72e0dc3b0bb1f9929744877",
   "firmware_api": "49.2",
   "apps": {
-    "PMR_Connect": "0.2",
+    "PMR_Connect": "0.3",
     "PMR_Radio": "0.17"
   },
   "sha256": {
-    "sd/apps/Sub-GHz/PMR_Connect.fap": "9f17d56783808fbbb0620b6a41f082f0c7cbd79414782cd62f13ecd905f162e2",
+    "sd/apps/Sub-GHz/PMR_Connect.fap": "fb537d6301ac5d953b58046357d1933e42afba105d1ec46d5221a6afa9ba107d",
     "sd/apps/Sub-GHz/PMR_Radio.fap": "6607764a6eb9b01278b835f8451b60f5ddccc31411e15da28f1e3f0481f3ec28",
     "sd/apps_data/pmr_radio/voice/ch01.pdm": "b22afc5ff95b6554d9ee2eae0a1ae9840ebecdee3b72bd913f5e36bfd6a3617f",
     "sd/apps_data/pmr_radio/voice/ch02.pdm": "3fe284d58706fc4d006ec905b605c0863ec2952523d7d70f33eda98d2b7f9d8d",
@@ -27,6 +27,7 @@
     "sd/apps_data/pmr_radio/voice/ch15.pdm": "ca517c960ef907aa818a411e66ab2bb4c315eb883113325372db3a84a903b0a5",
     "sd/apps_data/pmr_radio/voice/ch16.pdm": "74e7199150de8202fa932c5cd32c2eb3191e9bb87c4b7de00dde9f9732e2b78f",
     "releases/PMR-Connect-v0.2.zip": "cbb6c6c6f1c482608f21fca6f0c516b3e1ee31bd67ada90d89bf3f07b369e010",
+    "releases/PMR-Connect-v0.3.zip": "0df96a859691a2728646e6d9111f642fb8a2e8a3232da1412c96dd7366a2a620",
     "releases/PMR-Radio-v0.17.zip": "1bf5787ac8b647c0691ae10d50bf6d5b1622db6555c2e4d067e869f6c65fb668",
     "assets/voice-manifest.json": "988bd3c80d202799daa0067bb42defa27e496cacf43da404cb08062f706d07e3",
     "assets/voice-preview/channel-01.wav": "c663635f08e9c1fde2b969224220a4a5312fe1bb44c30b366fb9ea738ebb3278",

@@ -13,6 +13,7 @@
 #include "pmr_dsp.h"
 #include "pmr_radio_core.h"
 #include "pmr_codec.h"
+#include "pmr_rx_gate.h"
 
 #define RX_BLOCKS 8U
 #define TX_RING 4096U
@@ -30,7 +31,9 @@ typedef struct {
     volatile uint32_t rx_dropped,tx_dropped,underruns,tx_started,tx_marcstate,tx_tests,drain_until;
     Packet latest_status;volatile bool status_pending;
     volatile uint32_t ble_packets,ble_ms,ble_max_ms,probe_until,probe_next;
-    int32_t trigger_dbm,audio_release_dbm;volatile int32_t rssi;
+    int32_t trigger_dbm,audio_release_dbm,audio_floor_dbm;
+    PmrRxGate rx_gate;uint32_t receive_rate,carrier_checks;
+    volatile uint32_t sample_drops,queue_drops,ble_timeouts,ble_failures;volatile int32_t rssi;
     bool spi_owned,rx_timer,was_bt_active;
     char original_name[32];
     PmrDsp dsp;uint32_t resample_phase;int16_t previous;
@@ -68,11 +71,11 @@ static int32_t radio_rssi(void) {
     uint8_t raw=0;if(!radio_register(0x34,&raw,true))return -127;return (int32_t)(int8_t)raw/2-74;
 }
 static void calibrate(App* a) {
-    a->trigger_dbm=-90;a->audio_release_dbm=-97;
+    a->trigger_dbm=-90;a->audio_release_dbm=-97;a->audio_floor_dbm=-103;
     if(!radio_rx(a,false)){a->error=4;return;}
     int32_t center=radio_rssi();
     if(center< -80 && radio_rx(a,true)) {
-        int32_t floor=radio_rssi();a->trigger_dbm=CLAMP(center+10,-80,-100);a->audio_release_dbm=CLAMP(floor+4,-85,-105);
+        int32_t floor=radio_rssi();a->audio_floor_dbm=floor;a->trigger_dbm=CLAMP(center+10,-80,-100);a->audio_release_dbm=CLAMP(floor+4,-85,-105);
     }
     radio_rx(a,false);
 }
@@ -82,17 +85,17 @@ static void packet_send(App* a,uint8_t type,uint8_t epoch,uint16_t sequence,cons
     p.data[4]=n;p.data[5]=n>>8;p.data[6]=sequence;p.data[7]=sequence>>8;
     if(n)memcpy(p.data+8,data,n);
     if(type==0x81){FURI_CRITICAL_ENTER();a->latest_status=p;a->status_pending=true;FURI_CRITICAL_EXIT();}
-    else if(furi_message_queue_put(a->outgoing,&p,0)!=FuriStatusOk)a->rx_dropped++;
+    else if(furi_message_queue_put(a->outgoing,&p,0)!=FuriStatusOk){a->rx_dropped++;a->queue_drops++;}
 }
 static bool packet_next(App* a,Packet* p) {
     bool status;FURI_CRITICAL_ENTER();status=a->status_pending;if(status){*p=a->latest_status;a->status_pending=false;}FURI_CRITICAL_EXIT();
     return status || furi_message_queue_get(a->outgoing,p,5)==FuriStatusOk;
 }
 static void status_send(App* a) {
-    uint8_t b[26]={a->channel,a->mode,a->state,a->listening,(uint8_t)(int8_t)a->rssi,a->epoch,a->error,2};
+    uint8_t b[26]={a->channel,a->mode,a->state,a->listening,(uint8_t)(int8_t)a->rssi,a->epoch,a->error,3};
     uint16_t buffered=a->tx_head-a->tx_tail;memcpy(b+8,&buffered,2);
     uint16_t rate=VOICE_RATE;memcpy(b+10,&rate,2);
-    uint32_t values[]={a->rx_dropped,a->underruns,a->tx_dropped};memcpy(b+12,values,12);uint16_t rx_rate=RECEIVE_RATE;memcpy(b+24,&rx_rate,2);
+    uint32_t values[]={a->rx_dropped,a->underruns,a->tx_dropped};memcpy(b+12,values,12);uint16_t rx_rate=a->receive_rate;memcpy(b+24,&rx_rate,2);
     packet_send(a,0x81,a->epoch,0,b,sizeof(b));
 }
 static void input(InputEvent* e,void* context) {App* a=context;furi_message_queue_put(a->keys,e,0);}
@@ -123,16 +126,16 @@ static void rx_irq(void* context) {
     if(!LL_TIM_IsActiveFlag_UPDATE(TIM2))return;
     LL_TIM_ClearFlag_UPDATE(TIM2);App* a=context;
     uint8_t raw=0;bool valid=sample_rssi_irq(&raw);
-    int16_t pcm=valid?pmr_dsp_sample(&a->dsp,(float)(int8_t)raw*.5f):0;
+    int16_t pcm=valid?pmr_dsp_sample_rate(&a->dsp,(float)(int8_t)raw*.5f,a->receive_rate<4000):0;
     if(valid){a->rx_sum+=(int8_t)raw;a->rx_measurements++;}else a->read_errors++;
-    a->resample_phase+=RECEIVE_RATE;
+    a->resample_phase+=a->receive_rate;
     if(a->resample_phase>=8000){
         a->resample_phase-=8000;
-        int32_t sample=pcm+((int32_t)a->previous-pcm)*(int32_t)a->resample_phase/(int32_t)RECEIVE_RATE;
+        int32_t sample=pcm+((int32_t)a->previous-pcm)*(int32_t)a->resample_phase/(int32_t)a->receive_rate;
         if(a->rx_head-a->rx_tail<RX_BLOCKS){
             a->rx[a->rx_head%RX_BLOCKS][a->rx_count++]=(int16_t)sample;
             if(a->rx_count==VOICE_SAMPLES){a->rx_count=0;__DMB();a->rx_head++;}
-        }else a->rx_dropped++;
+        }else{a->rx_dropped++;a->sample_drops++;}
     }
     a->previous=pcm;
 }
@@ -142,8 +145,8 @@ static void rx_pause(App* a) {
 }
 static bool rx_start(App* a,bool fresh) {
     if(!radio_rx(a,true))return false;
-    if(fresh){a->rx_head=a->rx_tail=0;a->rx_count=0;a->encoder_index=0;a->read_errors=0;}
-    memset(&a->dsp,0,sizeof(a->dsp));a->resample_phase=0;a->previous=0;a->rx_sum=0;a->rx_measurements=0;
+    if(fresh){a->rx_head=a->rx_tail=0;a->rx_count=0;a->encoder_index=0;a->read_errors=0;memset(&a->dsp,0,sizeof(a->dsp));a->resample_phase=0;a->previous=0;}
+    a->rx_sum=0;a->rx_measurements=0;pmr_rx_gate_start(&a->rx_gate,a->audio_floor_dbm,furi_get_tick());
     furi_hal_spi_acquire(&furi_hal_spi_bus_handle_subghz);a->spi_owned=true;
     furi_hal_bus_enable(FuriHalBusTIM2);LL_TIM_InitTypeDef cfg={0};cfg.Prescaler=63;cfg.Autoreload=124;
     LL_TIM_Init(TIM2,&cfg);LL_TIM_SetClockSource(TIM2,LL_TIM_CLOCKSOURCE_INTERNAL);LL_TIM_DisableARRPreload(TIM2);
@@ -237,15 +240,15 @@ static int32_t transport_worker(void* context) {
         if(!connected){furi_hal_bt_start_advertising();furi_delay_ms(10);continue;}
         size_t n=furi_stream_buffer_receive(a->incoming,bytes,sizeof(bytes),0);if(n)consume(a,bytes,n);
         if(furi_stream_buffer_is_empty(a->incoming))furi_hal_bt_serial_notify_buffer_is_empty();
-        if(furi_get_tick()-last_status>1000){status_send(a);last_status=furi_get_tick();}
+        if(furi_get_tick()-last_status>(a->state==2?2000U:1000U)){status_send(a);last_status=furi_get_tick();}
         Packet p;
         if(packet_next(a,&p)){
             uint32_t started=furi_get_tick();
             furi_event_flag_clear(a->flags,ACK_FLAG);
-            if(!furi_hal_bt_serial_tx(p.data,p.size)){if(p.data[2]==0x82)a->rx_dropped++;furi_delay_ms(5);continue;}
-            uint32_t flags=furi_event_flag_wait(a->flags,ACK_FLAG,FuriFlagWaitAny,200);
+            if(!furi_hal_bt_serial_tx(p.data,p.size)){a->ble_failures++;if(p.data[2]==0x82)a->rx_dropped++;furi_delay_ms(5);continue;}
+            uint32_t flags=furi_event_flag_wait(a->flags,ACK_FLAG,FuriFlagWaitAny,500);
             uint32_t elapsed=furi_get_tick()-started;a->ble_packets++;a->ble_ms+=elapsed;if(elapsed>a->ble_max_ms)a->ble_max_ms=elapsed;
-            if((flags&FuriFlagError) && p.data[2]==0x82){a->rx_dropped++;}
+            if(flags&FuriFlagError){a->ble_timeouts++;if(p.data[2]==0x82)a->rx_dropped++;}
         }
     }
     return 0;
@@ -268,7 +271,8 @@ static void cli_command(Cli* cli,FuriString* args,void* context) {
     if(!strcmp(text,"mode usb") || !strcmp(text,"mode bluetooth")){
         Command c={.type=20,.n=1,.data={!strcmp(text,"mode usb")}};furi_message_queue_put(a->commands,&c,0);
     }
-    printf("version=2 mode=%lu connected=%u attached=%u channel=%lu state=%lu listen=%u rssi=%ld error=%lu rx_dropped=%lu tx_dropped=%lu underruns=%lu tx_tests=%lu tx_marcstate=%lu read_errors=%lu bt_active=%u bt_phy=%u bt_ready=%u ble_packets=%lu ble_ms=%lu ble_max=%lu\r\n",a->mode,a->connected,a->attached,a->channel,a->state,a->listening,a->rssi,a->error,a->rx_dropped,a->tx_dropped,a->underruns,a->tx_tests,a->tx_marcstate,a->read_errors,furi_hal_bt_is_active(),furi_hal_bt_is_connected(),a->ble_ready,a->ble_packets,a->ble_ms,a->ble_max_ms);
+    printf("version=3 mode=%lu connected=%u attached=%u channel=%lu state=%lu listen=%u rssi=%ld error=%lu rx_dropped=%lu tx_dropped=%lu underruns=%lu tx_tests=%lu tx_marcstate=%lu read_errors=%lu bt_active=%u bt_phy=%u bt_ready=%u ble_packets=%lu ble_ms=%lu ble_max=%lu\r\n",a->mode,a->connected,a->attached,a->channel,a->state,a->listening,a->rssi,a->error,a->rx_dropped,a->tx_dropped,a->underruns,a->tx_tests,a->tx_marcstate,a->read_errors,furi_hal_bt_is_active(),furi_hal_bt_is_connected(),a->ble_ready,a->ble_packets,a->ble_ms,a->ble_max_ms);
+    printf("rx_rate=%lu carrier_checks=%lu sample_drops=%lu queue_drops=%lu ble_timeouts=%lu ble_failures=%lu audio_floor=%ld gate_reference=%ld gate_ambiguous=%u\r\n",a->receive_rate,a->carrier_checks,a->sample_drops,a->queue_drops,a->ble_timeouts,a->ble_failures,a->audio_floor_dbm,a->rx_gate.reference,a->rx_gate.ambiguous);
 }
 static void mode_set(App* a,uint32_t mode) {
     uint32_t previous=a->mode;a->listening=false;radio_stop(a);a->usb_abort=true;
@@ -278,10 +282,10 @@ static void mode_set(App* a,uint32_t mode) {
     a->parser_size=0;a->error=0;furi_stream_buffer_reset(a->incoming);furi_message_queue_reset(a->outgoing);a->status_pending=false;
     if(!mode){bt_set_profile(a->bt,BtProfileSerial);furi_hal_bt_start_advertising();}
     else furi_hal_bt_stop_advertising();
-    a->mode=mode;
+    a->receive_rate=mode?RECEIVE_RATE:RECEIVE_RATE_BLE;a->mode=mode;
 }
 int32_t pmr_connect_app(void* args) {
-    UNUSED(args);App* a=malloc(sizeof(App));memset(a,0,sizeof(*a));a->channel=9;a->rssi=-127;a->running=true;
+    UNUSED(args);App* a=malloc(sizeof(App));memset(a,0,sizeof(*a));a->channel=9;a->receive_rate=RECEIVE_RATE_BLE;a->rssi=-127;a->running=true;
     a->keys=furi_message_queue_alloc(8,sizeof(InputEvent));a->commands=furi_message_queue_alloc(8,sizeof(Command));
     a->outgoing=furi_message_queue_alloc(8,sizeof(Packet));a->incoming=furi_stream_buffer_alloc(4096,1);a->flags=furi_event_flag_alloc();
     Gui* gui=furi_record_open(RECORD_GUI);a->view=view_port_alloc();view_port_draw_callback_set(a->view,draw,a);view_port_input_callback_set(a->view,input,a);gui_add_view_port(gui,a->view,GuiLayerFullscreen);
@@ -290,10 +294,10 @@ int32_t pmr_connect_app(void* args) {
     a->bt=furi_record_open(RECORD_BT);a->was_bt_active=furi_hal_bt_is_active();snprintf(a->original_name,sizeof(a->original_name),"%s",bt_get_profile_adv_name(a->bt));
     bt_disconnect(a->bt);bt_set_status_changed_callback(a->bt,bt_status,a);bt_set_profile(a->bt,BtProfileSerial);furi_hal_bt_start_advertising();
     a->worker=furi_thread_alloc_ex("PmrLink",4096,transport_worker,a);furi_thread_start(a->worker);
-    uint32_t last_signal=0,next_ui=0,stable=0,check_wait=600,last_measure=0;
+    uint32_t next_ui=0,stable=0,last_measure=0;
     while(a->running){
         uint32_t now=furi_get_tick();InputEvent key;
-        if((int32_t)(a->probe_until-now)>0 && now>=a->probe_next){uint8_t zeros[VOICE_BYTES]={0};packet_send(a,0x83,0,a->rx_sequence++,zeros,sizeof(zeros));a->probe_next+=81;}
+        if((int32_t)(a->probe_until-now)>0 && now>=a->probe_next){uint8_t zeros[VOICE_BYTES]={0};packet_send(a,0x83,0,a->rx_sequence++,zeros,sizeof(zeros));a->probe_next+=(VOICE_SAMPLES*1000U+a->receive_rate-1)/a->receive_rate;}
         while(furi_message_queue_get(a->keys,&key,0)==FuriStatusOk){
             if(key.type!=InputTypeShort)continue;
             if(key.key==InputKeyBack){a->running=false;break;}
@@ -330,18 +334,18 @@ int32_t pmr_connect_app(void* args) {
             else{
                 if(now-last_measure>=20){
                     FURI_CRITICAL_ENTER();int32_t sum=a->rx_sum;uint32_t n=a->rx_measurements;a->rx_sum=0;a->rx_measurements=0;FURI_CRITICAL_EXIT();
-                    if(n){a->rssi=sum/(int32_t)(2*n)-74;if(a->rssi>a->audio_release_dbm){last_signal=now;check_wait=600;}}
+                    if(n){a->rssi=sum/(int32_t)(2*n)-74;pmr_rx_gate_update(&a->rx_gate,a->rssi,now);}
                     last_measure=now;
                 }
-                if(now-last_signal>check_wait){
-                    rx_pause(a);radio_rx(a,false);int32_t rssi=radio_rssi();
+                if(pmr_rx_gate_needs_check(&a->rx_gate,now)){
+                    a->carrier_checks++;rx_pause(a);radio_rx(a,false);int32_t rssi=radio_rssi();
                     if(rssi<a->trigger_dbm-4){rx_drain(a);a->state=a->listening?1:0;stable=0;status_send(a);}
-                    else{rx_start(a,false);last_signal=furi_get_tick();if(check_wait<2400)check_wait*=2;}
+                    else if(!rx_start(a,false)){a->error=4;a->listening=false;radio_stop(a);}
                 }
             }
         }else if(a->connected && a->listening){
             a->state=1;a->rssi=radio_rssi();stable=a->rssi>a->trigger_dbm?stable+1:0;
-            if(stable>=3){if(!rx_start(a,true)){a->error=4;a->listening=false;}last_signal=now;last_measure=now;check_wait=600;stable=0;status_send(a);}
+            if(stable>=3){if(!rx_start(a,true)){a->error=4;a->listening=false;}last_measure=now;stable=0;status_send(a);}
         }
         if(now>=next_ui){view_port_update(a->view);next_ui=now+150;}
         furi_delay_ms(10);

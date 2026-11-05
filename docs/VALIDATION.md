@@ -1,5 +1,7 @@
 # Validation and evidence boundaries
 
+For the current PMR Connect 0.3 fix and new 16-test suite, see [SMOOTHNESS-0.3.md](SMOOTHNESS-0.3.md). The v0.2 and initial repository-packaging results below are retained as historical evidence.
+
 Original device experiments and reports were produced on 5 November 2026, using the user's Flipper Dobby on Xtreme API 49.2 and a Motorola T72, principally channel 9. This repository-packaging work did not change or reinstall the device apps.
 
 ## PMR Connect 0.2

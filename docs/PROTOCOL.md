@@ -1,4 +1,4 @@
-# PMR Connect wire protocol, version 2
+# PMR Connect wire protocol, version 3
 
 The implementation is in `firmware/pmr_connect/pmr_connect.c`, `pmr_codec.h`, and `web/{transports,codec,app}.js`. This protocol is for the custom PMR Connect app, not the official Flipper RPC protocol.
 
@@ -39,7 +39,7 @@ Type 20 is an internal transport-switch command used by the Flipper CLI/UI; norm
 | `0x82` | 164-byte received-audio IMA block |
 | `0x83` | 164-byte diagnostic load packet; not audio |
 
-Status is prioritized over queued audio and sent on changes plus periodically around once a second. Clients must count incoming audio as link activity too; sparse status alone must not disconnect a healthy stream.
+Status is prioritized over queued audio and sent on changes plus periodically (two seconds during BLE reception, one second otherwise). Clients must count incoming audio as link activity too; sparse status alone must not disconnect a healthy stream.
 
 ### Status layout
 
@@ -52,13 +52,13 @@ Status is prioritized over queued audio and sent on changes plus periodically ar
 | 4 | i8 | RSSI in dBm |
 | 5 | u8 | PTT epoch |
 | 6 | u8 | Error/status code |
-| 7 | u8 | Protocol version, 2 |
+| 7 | u8 | Protocol version, 3 |
 | 8 | u16 | Buffered transmit samples |
 | 10 | u16 | Transmit sample rate, 6000 Hz |
 | 12 | u32 | Dropped receive packets |
 | 16 | u32 | Transmit underrun samples |
 | 20 | u32 | Dropped transmit blocks |
-| 24 | u16 | Receive sample rate, 4000 Hz |
+| 24 | u16 | Receive sample rate: 3200 Hz BLE, 4000 Hz USB |
 
 Relevant errors: 1 busy channel, 2 transmit unavailable/blocked, 3 channel change while talking, 4 receive start failure, 5 timeout/expired session, 8 invalid data, 9 buffer/queue overflow. See code for precise state transitions.
 
@@ -66,7 +66,7 @@ Relevant errors: 1 busy channel, 2 transmit unavailable/blocked, 3 channel chang
 
 Each IMA ADPCM block is 164 bytes for 321 signed 16-bit mono samples: initial predictor `i16`, step index `u8` (0–88), reserved zero byte, then 160 bytes containing low-nibble-first codes. The block predictor is its first output sample. A malformed index, reserved byte or length is rejected. Tests verify C/JavaScript agreement and independent FFmpeg decoding.
 
-Host microphone input is resampled continuously to 6000 Hz. Transmit blocks therefore span 53.5 ms. Two blocks are buffered before RF starts. The radio output expands samples to nominal 48 kHz one-bit PDM using asynchronous FSK transmission. Received RSSI is sampled at 8 kHz, filtered, then downsampled to 4 kHz; received blocks span 80.25 ms. Decode using the rates reported in status, not one shared rate for both directions.
+Host microphone input is resampled continuously to 6000 Hz. Transmit blocks therefore span 53.5 ms. Two blocks are buffered before RF starts. The radio output expands samples to nominal 48 kHz one-bit PDM using asynchronous FSK transmission. Received RSSI is sampled at 8 kHz, filtered, then resampled to 3.2 kHz for BLE or 4 kHz for USB; received blocks span 100.3125 ms or 80.25 ms respectively. Decode using the rates reported in status, not one shared rate for both directions.
 
 During PTT, keep audio flowing; heartbeat alone cannot keep RF keyed. Missing audio for over 400 ms, lost client contact for over 1500 ms, disconnection, or 60 seconds of active RF causes stop. These are software limits, with scheduling/transport latency; the measured missing-audio stop was about 0.51 seconds after the host's final write. Explicit release sends a graceful STOP; emergency/disconnect paths request an immediate stop. Use the matching epoch for audio and STOP so delayed packets from an earlier PTT do not control a new one.
 
@@ -93,7 +93,7 @@ Open PMR Connect in USB mode before connecting. Open the serial port at 115200 b
 <Ctrl-C><CR>pmr_connect usb<CR>
 ```
 
-The CLI responds `PMRCONNECT1\r\n`, after which the same binary framing applies. The textual handshake string is retained for compatibility even though status reports protocol 2. Disconnect command 7 stops the session and returns `CONNECT_END` and the CLI prompt. Ignore CLI text while resynchronizing the binary parser.
+The CLI responds `PMRCONNECT1\r\n`, after which the same binary framing applies. The textual handshake string is retained for compatibility even though status reports protocol 3. Disconnect command 7 stops the session and returns `CONNECT_END` and the CLI prompt. Ignore CLI text while resynchronizing the binary parser.
 
 Diagnostic CLI commands, while the app is running and no binary session owns the port:
 
@@ -104,4 +104,6 @@ pmr_connect mode usb
 pmr_connect linktest
 ```
 
-`linktest` schedules eight seconds of synthetic 164-byte `0x83` packets at approximately the receive-audio rate. It does not prove RF audio quality. The final result is stored in `validation/connect/ble-capacity.json`.
+`linktest` schedules eight seconds of synthetic 164-byte `0x83` packets at approximately the selected transport’s receive-audio rate. It does not prove RF audio quality. The v0.3 result is stored in `validation/connect-v0.3/ble-capacity.json`.
+
+Version 0.3 adds no frame layout changes. The new browser accepts protocol 2 / 4 kHz for backward compatibility and protocol 3 / the advertised 3.2 or 4 kHz rate. Older browser code rejects the new rate/version; refresh the page after updating the FAP. The browser now renders through a continuous AudioWorklet queue, with a 240 ms target and small clock-drift correction. Short lost intervals fade to silence rather than fabricating speech.
