@@ -23,8 +23,8 @@ for app in pmr_capture pmr_connect; do
     mkdir -p "$target"
     cp "$repo_root/firmware/$app/"* "$target/"
     (cd "$sdk_path" && FBT_NO_SYNC=1 ./fbt build "APPSRC=applications_user/$app")
-    filename=PMR_Connect.fap
-    if [[ "$app" == pmr_capture ]]; then filename=PMR_Radio.fap; fi
+    filename=Flippie_Talkie.fap
+    if [[ "$app" == pmr_capture ]]; then filename=Flippie_Talkie_Radio.fap; fi
     cp "$sdk_path/build/f7-firmware-C/.extapps/$app.fap" "$repo_root/build/sd/apps/Sub-GHz/$filename"
 done
 mkdir -p "$repo_root/build/sd/apps_data/pmr_radio"

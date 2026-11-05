@@ -6,7 +6,7 @@ The supplied binaries target Xtreme API 49.2. Check your actual firmware/API. Re
 
 ## Flipper does not appear, or pairing fails
 
-Open PMR Connect on Flipper and select Bluetooth with OK. Use a supported browser with Bluetooth permission. Disconnect other browser tabs and the official Flipper mobile app; the device supports one central connection here. Select the device's actual name (Dobby on the tested unit). Pairing is initiated by a secure characteristic read; when a system pairing prompt appears, enter the current code displayed on Flipper. A previously paired device may reconnect without a code. If pairing state is stale, disconnect, remove the old pairing in system settings, reopen the app and pair again.
+Open Flippie Talkie on Flipper and select Bluetooth with OK. Use a supported browser with Bluetooth permission. Disconnect other browser tabs and the official Flipper mobile app; the device supports one central connection here. Select the device's actual name (Dobby on the tested unit). Pairing is initiated by a secure characteristic read; when a system pairing prompt appears, enter the current code displayed on Flipper. A previously paired device may reconnect without a code. If pairing state is stale, disconnect, remove the old pairing in system settings, reopen the app and pair again.
 
 ## “Connection lost. Transmission has stopped.”
 
@@ -19,7 +19,7 @@ The interface disables talk/listen when contact is lost. Open the app again if i
 - Press the Motorola transmit button and speak; a silent carrier button press contains no voice.
 - Start a practical test around a metre apart, not touching. Compare with a normal radio to separate RF issues from browser playback.
 - Allow microphone access before browser push-to-talk. A microphone level meter only verifies the browser input, not successful RF output.
-- PMR Connect uses the computer/phone speaker. For the Flipper's own speaker use PMR Radio and set volume above zero.
+- Flippie Talkie uses the computer/phone speaker. For the Flipper's own speaker use Flippie Talkie Radio and set volume above zero.
 
 ## Speech is quiet or noisy
 
@@ -27,15 +27,15 @@ The receiver is an RSSI slope-detector experiment. Its noise and distortion are 
 
 ## USB cannot open the port
 
-Close qFlipper, any serial terminal, and other browser tabs using the device. Open PMR Connect manually, select USB on Flipper, then USB in desktop Chrome/Edge. Reconnect after changing modes. If the app is not open, its `pmr_connect usb` command does not exist.
+Close qFlipper, any serial terminal, and other browser tabs using the device. Open Flippie Talkie manually, select USB on Flipper, then USB in desktop Chrome/Edge. Reconnect after changing modes. If the app is not open, its `pmr_connect usb` command does not exist.
 
 ## Spoken tests are missing
 
-Use PMR Radio, not PMR Connect. Install every `chNN.pdm` into `SD/apps_data/pmr_radio/voice/`, select a channel, then hold OK on the main screen. The file header includes the channel number and checksum, so simply renaming another channel's asset will not make a valid replacement. Run the offline asset tests after regenerating prompts.
+Use Flippie Talkie Radio, not Flippie Talkie. Install every `chNN.pdm` into `SD/apps_data/pmr_radio/voice/`, select a channel, then hold OK on the main screen. The file header includes the channel number and checksum, so simply renaming another channel's asset will not make a valid replacement. Run the offline asset tests after regenerating prompts.
 
 ## Recordings have gaps or fail to save
 
-PMR Radio saves WAV files under `SD/apps_data/pmr_voice/`; PMR Connect does not save recordings. Check the menu's recording setting, card free space and that the app finishes recording before you copy a file. A slow/occasionally stalled SD write was observed and is not proven resolved. The validation report records one failure followed by a passing repeat; don't assume missing audio can be restored by filtering. Preserve original files before repair or analysis. Incorrect device time affects filenames, not the nominal audio sample rate.
+Flippie Talkie Radio saves WAV files under `SD/apps_data/pmr_voice/`; Flippie Talkie does not save recordings. Check the menu's recording setting, card free space and that the app finishes recording before you copy a file. A slow/occasionally stalled SD write was observed and is not proven resolved. The validation report records one failure followed by a passing repeat; don't assume missing audio can be restored by filtering. Preserve original files before repair or analysis. Incorrect device time affects filenames, not the nominal audio sample rate.
 
 ## Local page works on Mac but not phone
 

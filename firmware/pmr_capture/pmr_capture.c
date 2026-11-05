@@ -303,12 +303,12 @@ static void draw(Canvas* canvas, void* context) {
     furi_mutex_acquire(app->mutex,FuriWaitForever);
     char line[64];canvas_clear(canvas);canvas_set_font(canvas,FontPrimary);
     if(app->help_open && !app->recording && !app->saving) {
-        canvas_draw_str(canvas,2,10,"PMR Radio  |  Help");canvas_set_font(canvas,FontSecondary);
+        canvas_set_font(canvas,FontSecondary);canvas_draw_str(canvas,2,10,"Flippie Talkie | Help");canvas_set_font(canvas,FontSecondary);
         canvas_draw_str(canvas,2,21,"Match channel on both radios.");
         canvas_draw_str(canvas,2,31,"Motorola privacy code: 0/off");
         canvas_draw_str(canvas,2,41,"Hold OK: say channel over RF");
         canvas_draw_str(canvas,2,51,"REC saves full receives to SD.");
-        canvas_draw_str(canvas,2,62,"Back: return     v0.17");
+        canvas_draw_str(canvas,2,62,"Back: return     v0.18");
     } else if(app->transmitting) {
         snprintf(line,sizeof(line),"TRANSMITTING  CH %lu",app->channel);canvas_draw_str(canvas,2,12,line);
         canvas_set_font(canvas,FontSecondary);
@@ -317,7 +317,7 @@ static void draw(Canvas* canvas, void* context) {
         canvas_draw_str(canvas,2,43,"Listen on your Motorola.");
         canvas_draw_str(canvas,2,61,"OK / Back: stop transmission");
     } else if(app->menu_open && !app->recording && !app->saving) {
-        canvas_draw_str(canvas,2,10,"PMR Radio  |  Options");canvas_set_font(canvas,FontSecondary);
+        canvas_set_font(canvas,FontSecondary);canvas_draw_str(canvas,2,10,"Flippie Talkie | Options");canvas_set_font(canvas,FontSecondary);
         uint32_t first=app->menu_index>=4?app->menu_index-3:0;
         for(uint32_t row=0;row<4 && first+row<6;row++) {
             uint32_t item=first+row;
@@ -328,7 +328,7 @@ static void draw(Canvas* canvas, void* context) {
         }
         canvas_draw_str(canvas,2,63,"Up/Down  OK: choose  Back");
     } else {
-        snprintf(line,sizeof(line),"PMR Radio       CH %02lu",app->channel);canvas_draw_str(canvas,2,10,line);
+        canvas_set_font(canvas,FontSecondary);snprintf(line,sizeof(line),"Flippie Talkie   CH %02lu",app->channel);canvas_draw_str(canvas,2,10,line);
         canvas_set_font(canvas,FontSecondary);
         uint32_t hz=pmr_channel_hz(app->channel);
         snprintf(line,sizeof(line),"%lu.%05lu MHz    %ld dBm",hz/1000000,(hz%1000000)/10,app->rssi_dbm);canvas_draw_str(canvas,2,21,line);
@@ -1123,7 +1123,7 @@ static void cli_command(Cli* cli, FuriString* args, void* context) {
         furi_message_queue_put(app->queue,&event,0);
     }
     furi_mutex_acquire(app->mutex,FuriWaitForever);
-    printf("version=17 on_dbm=%ld off_dbm=%ld audio_floor=%ld audio_off=%ld floor_ready=%u state=%s profile=%lu samples=%lu elapsed=%lu signal=%s rssi=%ld armed=%u dropped=%lu files=%lu peak=%ld legacy_trigger_dbm=-80 triggers=%lu rx_state=%lu read_errors=%lu recoveries=%lu last_signal_tick=%lu tuned_hz=%lu calibration=%s cal_step=%lu selected=%ld range=%u audio_setting=%lu center=%ld carrier_checks=%lu tuning_probes=%lu file=%s\r\n",app->trigger_dbm,app->release_dbm,app->audio_floor_dbm,app->audio_release_dbm,app->floor_ready,app->recording?"recording":app->error?"error":app->done?"saved":"ready",app->profile,app->samples,app->elapsed,app->receiving?"RECEIVING":"IDLE",app->rssi_dbm,app->armed,app->dropped,app->files,app->peak_dbm,app->triggers,app->marcstate,app->read_errors,app->recoveries,app->last_signal_tick,app->tuned_hz,app->calibrating?"running":app->calibration_armed?"waiting":"off",app->cal_step,app->selected_setting,app->range_mode,app->audio_setting,app->center_dbm,app->carrier_checks,app->tuning_probes,app->path);
+    printf("version=18 on_dbm=%ld off_dbm=%ld audio_floor=%ld audio_off=%ld floor_ready=%u state=%s profile=%lu samples=%lu elapsed=%lu signal=%s rssi=%ld armed=%u dropped=%lu files=%lu peak=%ld legacy_trigger_dbm=-80 triggers=%lu rx_state=%lu read_errors=%lu recoveries=%lu last_signal_tick=%lu tuned_hz=%lu calibration=%s cal_step=%lu selected=%ld range=%u audio_setting=%lu center=%ld carrier_checks=%lu tuning_probes=%lu file=%s\r\n",app->trigger_dbm,app->release_dbm,app->audio_floor_dbm,app->audio_release_dbm,app->floor_ready,app->recording?"recording":app->error?"error":app->done?"saved":"ready",app->profile,app->samples,app->elapsed,app->receiving?"RECEIVING":"IDLE",app->rssi_dbm,app->armed,app->dropped,app->files,app->peak_dbm,app->triggers,app->marcstate,app->read_errors,app->recoveries,app->last_signal_tick,app->tuned_hz,app->calibrating?"running":app->calibration_armed?"waiting":"off",app->cal_step,app->selected_setting,app->range_mode,app->audio_setting,app->center_dbm,app->carrier_checks,app->tuning_probes,app->path);
     printf("channel=%lu frequency=%lu menu=%u menu_index=%lu settings_error=%u voice=%u\r\n",app->channel,pmr_channel_hz(app->channel),app->menu_open,app->menu_index,app->settings_error,app->voice_tx);
     printf("local_record=%u speaker=%u volume=%lu saved=%lu sd_error=%u wav_frames=%lu sd_writes=%lu sd_max_us=%lu gap_frames=%lu clips=%lu max_irq_cycles=%lu max_gap_cycles=%lu ready_file=%u\r\n",app->record_enabled,app->speaker_owned,app->volume,app->saved,app->sd_error,app->wav_frames,app->sd_writes,app->sd_max_us,app->gap_frames,app->clips,app->max_irq_cycles,app->max_gap_cycles,app->ready_file!=NULL);
     furi_mutex_release(app->mutex);

@@ -1,3 +1,5 @@
+Current branding and installation checks are in [RENAME-0.4.md](RENAME-0.4.md). The original names below identify the releases actually tested.
+
 # Validation and evidence boundaries
 
 For the current PMR Connect 0.3 fix and new 16-test suite, see [SMOOTHNESS-0.3.md](SMOOTHNESS-0.3.md). The v0.2 and initial repository-packaging results below are retained as historical evidence.

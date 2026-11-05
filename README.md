@@ -1,22 +1,24 @@
-# Flipper PMR Radio
+# Flippie Talkie
 
-Experimental 16-channel PMR446 radio apps for Flipper Zero: **PMR Connect 0.3** uses a computer/phone as the microphone and speaker over Bluetooth or USB; **PMR Radio 0.17** runs on the Flipper itself with speaker playback, automatic SD WAV recording, and spoken channel tests.
+Experimental 16-channel PMR446 radio apps for Flipper Zero: **Flippie Talkie 0.4** uses a computer/phone as the microphone and speaker over Bluetooth or USB; **Flippie Talkie Radio 0.18** runs on the Flipper itself with speaker playback, automatic SD WAV recording, and spoken channel tests.
 
-This repository contains the working app sources, installable binaries, web interface, all 16 voice prompts, host tools, validation reports, and the earlier radio experiments and full recordings. It preserves the project as tested on 5 November 2026.
-
-![PMR Connect interface](docs/interface.jpg)
+This repository contains the working app sources, installable binaries, web interface, all 16 voice prompts, host tools, validation reports, and the earlier radio experiments and full recordings. The current release renames the project and both apps; the receive-audio fixes from version 0.3 are unchanged.
 
 ## Start here
 
 | What you want | Use |
 | --- | --- |
-| Listen and use push-to-talk with a computer or phone | **PMR Connect** + [web interface](https://pmr-connect-dobby.kriss0011.chatgpt.site) |
-| Listen through Flipper's built-in speaker, record to SD, or send “Testing channel N” | **PMR Radio** |
+| Listen and use push-to-talk with a computer or phone | **Flippie Talkie** + [web interface](https://flippie-talkie.kriss0011.chatgpt.site) |
+| Listen through Flipper's built-in speaker, record to SD, or send “Testing channel N” | **Flippie Talkie Radio** |
 | Install both apps without building | Copy the contents of [`sd/`](sd) to the Flipper SD card |
 | Compile or change the apps | [Build instructions](docs/BUILD.md) |
 | Hear previous tests / inspect raw captures | [`archive/outputs/`](archive/outputs) and [experiment guide](docs/EXPERIMENTS.md) |
 
 See [the v0.3 change and validation report](docs/SMOOTHNESS-0.3.md) for the receive-audio fixes.
+
+![Flippie Talkie running on Flipper Zero](validation/rename-0.4/flipper-screen.png)
+
+See [the rename and upgrade notes](docs/RENAME-0.4.md) for the new app names, package names and URL.
 
 The hosted interface is a private ChatGPT Site and requires the owner's sign-in. It is independent of GitHub hosting. You can run the same interface locally or host `web/` yourself.
 
@@ -29,20 +31,20 @@ The hosted interface is a private ChatGPT Site and requires the owner's sign-in.
 3. Copy these files to the matching SD locations. Merge directories; do not replace the whole card:
 
    ```text
-   sd/apps/Sub-GHz/PMR_Connect.fap       -> SD/apps/Sub-GHz/PMR_Connect.fap
-   sd/apps/Sub-GHz/PMR_Radio.fap         -> SD/apps/Sub-GHz/PMR_Radio.fap
+   sd/apps/Sub-GHz/Flippie_Talkie.fap       -> SD/apps/Sub-GHz/Flippie_Talkie.fap
+   sd/apps/Sub-GHz/Flippie_Talkie_Radio.fap         -> SD/apps/Sub-GHz/Flippie_Talkie_Radio.fap
    sd/apps_data/pmr_radio/voice/ch*.pdm  -> SD/apps_data/pmr_radio/voice/ch*.pdm
    ```
 
-4. Keep all 16 `ch01.pdm` through `ch16.pdm` files for spoken channel tests. Existing recordings and settings can remain in place. Save a copy of an existing app binary before replacing it if you want a rollback.
-5. Close qFlipper when using browser USB. Open **Apps → Sub-GHz → PMR Connect** or **PMR Radio** on Flipper. Only one radio app runs at a time.
+4. When upgrading, move the old `PMR_Connect.fap` and `PMR_Radio.fap` files out of `SD/apps/Sub-GHz/` after copying the new apps, to avoid duplicate menu entries. Keep all 16 `ch01.pdm` through `ch16.pdm` files for spoken channel tests. Existing recordings and settings can remain in place. Save a copy of an existing app binary before replacing it if you want a rollback.
+5. Close qFlipper when using browser USB. Open **Apps → Sub-GHz → Flippie Talkie** or **Flippie Talkie Radio** on Flipper. Only one radio app runs at a time.
 
 The equivalent paths in the Flipper CLI begin with `/ext/` instead of `SD/`. The packaged files and archive can be checked with `python3 tools/verify_bundle.py`.
 
-## PMR Connect: Bluetooth listening and push-to-talk
+## Flippie Talkie: Bluetooth listening and push-to-talk
 
-1. Open **PMR Connect** on Flipper. It starts in **Bluetooth**, channel **9**. USB can be unplugged.
-2. Open the [hosted interface](https://pmr-connect-dobby.kriss0011.chatgpt.site) or your own copy in a supported browser.
+1. Open **Flippie Talkie** on Flipper. It starts in **Bluetooth**, channel **9**. USB can be unplugged.
+2. Open the [hosted interface](https://flippie-talkie.kriss0011.chatgpt.site) or your own copy in a supported browser.
 3. Select **Bluetooth → Connect Flipper**, then select your Flipper. The tested device advertises as **Dobby**. The app name does not replace its Bluetooth name.
 4. If asked to pair, enter the code currently displayed on Flipper into the computer/phone pairing prompt. A code is not shown for every reconnection.
 5. Choose the same channel on both radios. On the Motorola T72, use **privacy code 0/off**. Channel 9 is **446.10625 MHz**.
@@ -66,7 +68,7 @@ The user has confirmed basic operation in Bluefy on iPhone. Other untested phone
 
 ### USB fallback
 
-1. Connect Flipper by USB and open **PMR Connect**.
+1. Connect Flipper by USB and open **Flippie Talkie**.
 2. Press **OK on Flipper** to switch from Bluetooth to **USB**.
 3. In desktop Chrome/Edge, select **USB → Connect Flipper** and choose the Flipper serial port.
 4. Use the same listening and push-to-talk controls. Close any other serial client first.
@@ -85,9 +87,9 @@ Open **http://localhost:8765** in Chrome on that same computer. No npm install o
 
 For a phone, put the contents of `web/` on an HTTPS static host. An ordinary `http://192.168...` LAN address does not provide the secure browser context required by microphone/Bluetooth APIs. The host must serve JavaScript modules normally and allow microphone/Bluetooth permissions. No backend, API key, or deployment token is needed by this app. Hosting public web assets would expose the interface source even while this GitHub repository remains private; choose hosting access intentionally.
 
-## PMR Radio: standalone speaker and SD recordings
+## Flippie Talkie Radio: standalone speaker and SD recordings
 
-Open **Apps → Sub-GHz → PMR Radio**. It works with USB unplugged.
+Open **Apps → Sub-GHz → Flippie Talkie Radio**. It works with USB unplugged.
 
 | Control | Action |
 | --- | --- |
@@ -107,7 +109,7 @@ SD/apps_data/pmr_voice/chNN_<timestamp>_<tick>.wav
 
 After exiting the app, download WAVs with qFlipper's file manager. Any normal audio player can play them. The device's clock was incorrect during the experiments, so old filename timestamps are not reliable dates. Channel, volume and recording preferences are retained in `SD/apps_data/pmr_radio/settings.bin`.
 
-Version 0.17 restores the earlier, quieter speaker mapping: additional compression and treble boost were removed. Turning up the speaker cannot recover information missing from the RF reception. **PMR Connect does not currently record to SD or play through the Flipper speaker**; use PMR Radio for those functions.
+Version 0.17 restores the earlier, quieter speaker mapping: additional compression and treble boost were removed. Turning up the speaker cannot recover information missing from the RF reception. **Flippie Talkie does not currently record to SD or play through the Flipper speaker**; use Flippie Talkie Radio for those functions.
 
 ## What works, and what is still experimental
 
@@ -144,8 +146,8 @@ Fresh binaries land in `build/sd/apps/Sub-GHz/`. Copy them using the same instal
 ## Repository map
 
 ```text
-firmware/pmr_connect/   Bluetooth/USB Flipper app, v0.3
-firmware/pmr_capture/   Standalone PMR Radio app, v0.17 (historical internal name)
+firmware/pmr_connect/   Flippie Talkie Bluetooth/USB app, v0.4
+firmware/pmr_capture/   Standalone Flippie Talkie Radio app, v0.18 (historical internal name)
 web/                   Self-contained browser interface
 sd/                    Ready-to-copy apps and all 16 spoken-channel assets
 tools/                 Portable build, verification, voice and audio tools
@@ -153,9 +155,10 @@ tests/                 Offline C/JavaScript tests and short speech fixture
 docs/                  Build, protocol, troubleshooting, experiment and validation guides
 validation/            Original final hardware/transport validation reports
 assets/                Voice prompt manifest and WAV previews
-releases/              Original packaged releases and checksums
+releases/              Current Flippie Talkie packages and checksums
 archive/work/          Earlier scripts, app revisions and experiment data
 archive/outputs/       Earlier full recordings, calibrations and delivered results
+archive/legacy-releases/ Original packages and screenshot before the rename
 archive/manifest.json  SHA-256 integrity inventory of the historical archive
 ```
 

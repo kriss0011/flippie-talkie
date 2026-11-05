@@ -100,7 +100,7 @@ static void status_send(App* a) {
 }
 static void input(InputEvent* e,void* context) {App* a=context;furi_message_queue_put(a->keys,e,0);}
 static void draw(Canvas* c,void* context) {
-    App* a=context;char s[64];canvas_clear(c);canvas_set_font(c,FontPrimary);canvas_draw_str(c,2,10,"PMR Connect");
+    App* a=context;char s[64];canvas_clear(c);canvas_set_font(c,FontPrimary);canvas_draw_str(c,2,10,"Flippie Talkie");
     canvas_set_font(c,FontSecondary);snprintf(s,sizeof(s),"%s | CH %02lu | %ld dBm",a->mode?"USB":"BT",a->channel,a->rssi);canvas_draw_str(c,2,22,s);
     const char* state=!a->connected?(a->mode?"Connect browser via USB":"Pair in your web browser"):a->state==4?"TX: browser microphone":a->state==3?"Preparing microphone...":a->state==2?"RECEIVING to browser":a->listening?"Listening to selected channel":"Connected | Listening paused";
     canvas_draw_str(c,2,34,state);

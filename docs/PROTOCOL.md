@@ -1,6 +1,8 @@
-# PMR Connect wire protocol, version 3
+# Flippie Talkie wire protocol, version 3
 
-The implementation is in `firmware/pmr_connect/pmr_connect.c`, `pmr_codec.h`, and `web/{transports,codec,app}.js`. This protocol is for the custom PMR Connect app, not the official Flipper RPC protocol.
+The implementation is in `firmware/pmr_connect/pmr_connect.c`, `pmr_codec.h`, and `web/{transports,codec,app}.js`. This protocol is for the custom Flippie Talkie app, not the official Flipper RPC protocol.
+
+The app is now Flippie Talkie 0.4; protocol version remains 3. Existing CLI commands, frame markers and the USB handshake remain compatible.
 
 ## Framing
 
@@ -87,7 +89,7 @@ Use `writeValueWithoutResponse` for streaming audio. Writes with response were t
 
 ## USB serial
 
-Open PMR Connect in USB mode before connecting. Open the serial port at 115200 baud and send:
+Open Flippie Talkie in USB mode before connecting. Open the serial port at 115200 baud and send:
 
 ```text
 <Ctrl-C><CR>pmr_connect usb<CR>

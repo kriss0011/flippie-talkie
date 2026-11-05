@@ -1,0 +1,26 @@
+{
+  "project": "Flippie Talkie",
+  "date": "2026-11-05",
+  "firmware_api": "49.2",
+  "firmware_commit": "6523edcc65af2fa1a72e0dc3b0bb1f9929744877",
+  "fap_builds_passed": [
+    "Flippie Talkie 0.4",
+    "Flippie Talkie Radio 0.18"
+  ],
+  "offline_tests": {
+    "passed": 16,
+    "failed": 0
+  },
+  "website": {
+    "url": "https://flippie-talkie.kriss0011.chatgpt.site",
+    "title": "Flippie Talkie",
+    "audience": "owner-only",
+    "source_commit": "c4980013121edf5dbdb72570ceb078b30ed28e89",
+    "deployment_id": "appgdep_6aecd70f3fcc819181f5caacb767a418",
+    "status": "succeeded"
+  },
+  "browser_visual_check": "Unavailable: Mac locked",
+  "device_screen": "flipper-screen.png",
+  "rf_test_performed": false,
+  "iphone_smoothness_retest": "Pending user test; unchanged from v0.3"
+}

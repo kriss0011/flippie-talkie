@@ -3,8 +3,8 @@
 ## Get the project
 
 ```sh
-git clone https://github.com/kriss0011/flipper-pmr-radio.git
-cd flipper-pmr-radio
+git clone https://github.com/kriss0011/flippie-talkie.git
+cd flippie-talkie
 ```
 
 This repository is private: authenticate Git using an account with access. No GitHub token belongs in project files or remote URLs. No Git LFS is required for the current files.
@@ -68,7 +68,7 @@ FBT_NO_SYNC=1 ./fbt build APPSRC=applications_user/pmr_capture
 FBT_NO_SYNC=1 ./fbt build APPSRC=applications_user/pmr_connect
 ```
 
-The outputs are `build/f7-firmware-C/.extapps/pmr_capture.fap` and `pmr_connect.fap`. Filename `pmr_capture` is historical; the app is displayed as PMR Radio.
+The outputs are `build/f7-firmware-C/.extapps/pmr_capture.fap` and `pmr_connect.fap`. Filename `pmr_capture` is historical; the app is displayed as Flippie Talkie Radio.
 
 ## Generate spoken channel prompts
 

@@ -30,7 +30,7 @@ async function audio(){
 function receive(packet){
   if(packet.type===0x81||packet.type===0x82)lastStatus=performance.now();
   if(packet.type===0x81&&packet.data.length===26){
-    const b=packet.data,v=new DataView(b.buffer,b.byteOffset,b.length);if(![2,3].includes(b[7])||v.getUint16(10,true)!==RATE||![3200,4000].includes(v.getUint16(24,true))){notice('This app needs the matching PMR Connect version on the Flipper.');return;}
+    const b=packet.data,v=new DataView(b.buffer,b.byteOffset,b.length);if(![2,3].includes(b[7])||v.getUint16(10,true)!==RATE||![3200,4000].includes(v.getUint16(24,true))){notice('This app needs the matching Flippie Talkie version on the Flipper.');return;}
     const previousError=status?.error,previousState=status?.state;status={rxRate:v.getUint16(24,true),channel:b[0],mode:b[1],state:b[2],listening:!!b[3],rssi:v.getInt8(4),epoch:b[5],error:b[6],buffered:v.getUint16(8,true),dropped:v.getUint32(12,true),underruns:v.getUint32(16,true)};lastStatus=performance.now();
     if(!ready){ready=true;connecting=false;notice();}
     $('channel').value=String(status.channel);
@@ -62,12 +62,12 @@ $('connect').onclick=async()=>{
     if(current!==operation){await active.close();return;}
     heartbeat=setInterval(()=>send(1).catch(()=>{}),400);await send(1);
     const until=performance.now()+8000;while(!ready&&performance.now()<until&&link===active)await sleep(50);
-    if(!ready)throw Error('No reply from PMR Connect. Open the app on your Flipper and select the matching connection mode.');
+    if(!ready)throw Error('No reply from Flippie Talkie. Open the app on your Flipper and select the matching connection mode.');
     monitor=setInterval(()=>{if(ready&&performance.now()-lastStatus>2500){notice('Connection lost. Transmission has stopped.');disconnect();}},500);
     try{wakeLock=await navigator.wakeLock?.request('screen');}catch{}
   }catch(e){if(current!==operation)return;await disconnect();notice(e.name==='NotFoundError'?'No Flipper selected.':e.message);}
 };
-$('transport').onchange=()=>{$('connection-help').textContent=$('transport').value==='bluetooth'?'Open PMR Connect on your Flipper, select Bluetooth, then connect here.':'Connect a USB cable. Open PMR Connect on the Flipper and press OK to select USB.';};
+$('transport').onchange=()=>{$('connection-help').textContent=$('transport').value==='bluetooth'?'Open Flippie Talkie on your Flipper, select Bluetooth, then connect here.':'Connect a USB cable. Open Flippie Talkie on the Flipper and press OK to select USB.';};
 async function setChannel(n){if(!ready||held)return;clearPlayback();notice();try{await send(3,Uint8Array.of(n));}catch(e){notice(e.message);}}
 $('channel').onchange=()=>setChannel(Number($('channel').value));$('previous').onclick=()=>setChannel((status.channel+14)%16+1);$('next').onclick=()=>setChannel(status.channel%16+1);
 $('listen').onclick=async()=>{try{await audio();notice();clearPlayback();await send(2,Uint8Array.of(status.listening?0:1));}catch(e){notice(e.message);}};

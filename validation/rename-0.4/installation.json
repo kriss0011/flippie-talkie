@@ -1,0 +1,290 @@
+{
+  "app_versions": {
+    "Flippie Talkie": "0.4",
+    "Flippie Talkie Radio": "0.18"
+  },
+  "before": "version=3 mode=0 connected=0 attached=0 channel=9 state=0 listen=0 rssi=-98 error=0 rx_dropped=0 tx_dropped=0 underruns=0 tx_tests=0 tx_marcstate=0 read_errors=0 bt_active=1 bt_phy=0 bt_ready=0 ble_packets=92 ble_ms=4861 ble_max=124\r\nrx_rate=3200 carrier_checks=0 sample_drops=0 queue_drops=0 ble_timeouts=0 ble_failures=0 audio_floor=-100 gate_reference=0 gate_ambiguous=0",
+  "settings_before": "be302d62d8232254e2d950dd7b6a177a",
+  "recordings_before": {
+    "ch9_984628399_16420230.wav": {
+      "size": 128526,
+      "md5": "86cbc0e75b5488471471fd23ddbb6e50"
+    },
+    "ch9_984628523_16543883.wav": {
+      "size": 1280574,
+      "md5": "49c93d86a9cda08547467537fb3ebbf3"
+    },
+    "ch9_984628791_16811924.wav": {
+      "size": 10232,
+      "md5": "ef5fd1b41ea08f0f2d5dd7797c1e046c"
+    },
+    "ch9_984629094_17114793.wav": {
+      "size": 104256,
+      "md5": "24f12efeff7d5d49aade9201c04434a3"
+    },
+    "ch9_984629103_17123868.wav": {
+      "size": 80974,
+      "md5": "9532c919399a5994456b222afec33ed3"
+    },
+    "ch9_984629738_17759056.wav": {
+      "size": 79230,
+      "md5": "9e57dfb653cc975b254d755a705b8647"
+    },
+    "ch9_984629774_17794735.wav": {
+      "size": 106860,
+      "md5": "b4230343ae970dbbedc69be377481071"
+    },
+    "ch9_984629787_17807697.wav": {
+      "size": 170126,
+      "md5": "f2140f93709d813fc1662cc96495fadf"
+    },
+    "ch9_984630329_18349917.wav": {
+      "size": 80666,
+      "md5": "a54d3a763fdc461750350799ded22eda"
+    },
+    "ch9_984630334_18355332.wav": {
+      "size": 10574,
+      "md5": "771f6057e97b2f1bbd34a510df19640f"
+    },
+    "ch9_984630982_19003246.wav": {
+      "size": 21134,
+      "md5": "76a922f57f1a322991c8796020cbd35c"
+    },
+    "ch9_984631631_19651808.wav": {
+      "size": 35214,
+      "md5": "ff4be2b5e449e751bc6012f58021fa10"
+    },
+    "ch9_984631638_19658828.wav": {
+      "size": 80286,
+      "md5": "b867f13b505e4546d6365ca8b3ef59f5"
+    },
+    "ch9_984631648_19669045.wav": {
+      "size": 30990,
+      "md5": "145294551a6418c5db2fab44f24fd680"
+    },
+    "ch9_984631846_19867369.wav": {
+      "size": 76094,
+      "md5": "afd5e1d9591a74d4986b4fdd274d1110"
+    },
+    "ch09_984632116_20137095.wav": {
+      "size": 128508,
+      "md5": "fd44ff8d006f611b4f7d32f8f3a75900"
+    },
+    "ch09_984632140_20160441.wav": {
+      "size": 48588,
+      "md5": "d97f3a8b62cbc5d663ff8310d410d75b"
+    },
+    "ch06_984632448_20468488.wav": {
+      "size": 20412,
+      "md5": "9650b1e1ce296ab88cc38641e4939cdc"
+    },
+    "ch09_984632861_20882302.wav": {
+      "size": 39132,
+      "md5": "36cd06e0b5d63a7e9ee5db23d709e321"
+    },
+    "ch09_984632905_20925587.wav": {
+      "size": 48574,
+      "md5": "ecab0f15ba0ccd41b3bf67f2feb29db8"
+    },
+    "ch09_984632970_20990554.wav": {
+      "size": 10206,
+      "md5": "c3b5d992a41f295fed2ee70405854f63"
+    },
+    "ch09_984633285_21306194.wav": {
+      "size": 23582,
+      "md5": "8bec0ef63ca7db762676fe2ae9e3fd40"
+    },
+    "ch09_984633588_21608916.wav": {
+      "size": 35918,
+      "md5": "1189016884396b4634cc6382865b1f71"
+    },
+    "ch09_984633597_21617822.wav": {
+      "size": 31022,
+      "md5": "da4e93697a7d76aa4fb5cc9a94c002ed"
+    }
+  },
+  "installed": [
+    {
+      "path": "/ext/apps/Sub-GHz/Flippie_Talkie.fap",
+      "md5": "28056ea48d4516ec9c95f6b087f8b558",
+      "sha256": "1b25f2b12f50c81d0b8fa317448be56251ba73749ac04cd7b10217f94324d37a"
+    },
+    {
+      "path": "/ext/apps/Sub-GHz/Flippie_Talkie_Radio.fap",
+      "md5": "747bd31230e198f82334a86774b54d03",
+      "sha256": "be37ae86be5d6f2833912c7e7eb08f321303f65c5b5a39cd800c173c91bff946"
+    }
+  ],
+  "previous_apps": [
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture.fap",
+      "md5": "1dea279ef6e055539506c575d01cb365"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v2.fap",
+      "md5": "5718f53f2141ed7713b356f84876e9c6"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v3.fap",
+      "md5": "699d1fc05ec9888a85a1a5b4a96ee91e"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v4.fap",
+      "md5": "38c45de8827f0da14a1f4119dd5c05ef"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v5.fap",
+      "md5": "57b4e58cf1f6edfc253441f28ecfbb1e"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v6.fap",
+      "md5": "923d0d01a59f207200acfa781d008179"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v7.fap",
+      "md5": "28f50feba4f3085c9ec0fd5e8574cda3"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v8.fap",
+      "md5": "03b8693ecac4336998cc8f46bcb482df"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v9.fap",
+      "md5": "83f9730af6344ee4bc507815e84e2ad5"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v10.fap",
+      "md5": "0803a36127d77703c87e3b043c759e01"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v11.fap",
+      "md5": "566dd7b361928ef92068cc5113da39e0"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v12.fap",
+      "md5": "ccc6bd79cfe0b530f989123ed9d65be7"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v13.fap",
+      "md5": "1b208ecfdf0566384ca97ef58f506a31"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v14.fap",
+      "md5": "cd67494863de509de20150d19cf1893f"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/pmr_capture_v15.fap",
+      "md5": "0b97e3a7dda5e69be2eccf0240a9dbb0"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/PMR_Radio.fap",
+      "md5": "d78491131cabd90f57ad7f812ce0a230"
+    },
+    {
+      "path": "/ext/apps_data/flippie_talkie/previous_apps/PMR_Connect.fap",
+      "md5": "4b09d7cb729e3ac651dd4cab3338bf29"
+    }
+  ],
+  "standalone": "version=18 on_dbm=-87 off_dbm=-91 audio_floor=-99 audio_off=-95 floor_ready=1 state=ready profile=2 samples=0 elapsed=0 signal=IDLE rssi=-95 armed=1 dropped=0 files=0 peak=-93 legacy_trigger_dbm=-80 triggers=0 rx_state=13 read_errors=0 recoveries=0 last_signal_tick=0 tuned_hz=446106140 calibration=off cal_step=0 selected=6 range=0 audio_setting=6 center=-95 carrier_checks=0 tuning_probes=0 file=\r\nchannel=9 frequency=446106250 menu=0 menu_index=0 settings_error=0 voice=0\r\nlocal_record=1 speaker=1 volume=8 saved=0 sd_error=0 wav_frames=0 sd_writes=0 sd_max_us=0 gap_frames=0 clips=0 max_irq_cycles=0 max_gap_cycles=0 ready_file=1",
+  "settings_after": "be302d62d8232254e2d950dd7b6a177a",
+  "recordings_after": {
+    "ch9_984628399_16420230.wav": {
+      "size": 128526,
+      "md5": "86cbc0e75b5488471471fd23ddbb6e50"
+    },
+    "ch9_984628523_16543883.wav": {
+      "size": 1280574,
+      "md5": "49c93d86a9cda08547467537fb3ebbf3"
+    },
+    "ch9_984628791_16811924.wav": {
+      "size": 10232,
+      "md5": "ef5fd1b41ea08f0f2d5dd7797c1e046c"
+    },
+    "ch9_984629094_17114793.wav": {
+      "size": 104256,
+      "md5": "24f12efeff7d5d49aade9201c04434a3"
+    },
+    "ch9_984629103_17123868.wav": {
+      "size": 80974,
+      "md5": "9532c919399a5994456b222afec33ed3"
+    },
+    "ch9_984629738_17759056.wav": {
+      "size": 79230,
+      "md5": "9e57dfb653cc975b254d755a705b8647"
+    },
+    "ch9_984629774_17794735.wav": {
+      "size": 106860,
+      "md5": "b4230343ae970dbbedc69be377481071"
+    },
+    "ch9_984629787_17807697.wav": {
+      "size": 170126,
+      "md5": "f2140f93709d813fc1662cc96495fadf"
+    },
+    "ch9_984630329_18349917.wav": {
+      "size": 80666,
+      "md5": "a54d3a763fdc461750350799ded22eda"
+    },
+    "ch9_984630334_18355332.wav": {
+      "size": 10574,
+      "md5": "771f6057e97b2f1bbd34a510df19640f"
+    },
+    "ch9_984630982_19003246.wav": {
+      "size": 21134,
+      "md5": "76a922f57f1a322991c8796020cbd35c"
+    },
+    "ch9_984631631_19651808.wav": {
+      "size": 35214,
+      "md5": "ff4be2b5e449e751bc6012f58021fa10"
+    },
+    "ch9_984631638_19658828.wav": {
+      "size": 80286,
+      "md5": "b867f13b505e4546d6365ca8b3ef59f5"
+    },
+    "ch9_984631648_19669045.wav": {
+      "size": 30990,
+      "md5": "145294551a6418c5db2fab44f24fd680"
+    },
+    "ch9_984631846_19867369.wav": {
+      "size": 76094,
+      "md5": "afd5e1d9591a74d4986b4fdd274d1110"
+    },
+    "ch09_984632116_20137095.wav": {
+      "size": 128508,
+      "md5": "fd44ff8d006f611b4f7d32f8f3a75900"
+    },
+    "ch09_984632140_20160441.wav": {
+      "size": 48588,
+      "md5": "d97f3a8b62cbc5d663ff8310d410d75b"
+    },
+    "ch06_984632448_20468488.wav": {
+      "size": 20412,
+      "md5": "9650b1e1ce296ab88cc38641e4939cdc"
+    },
+    "ch09_984632861_20882302.wav": {
+      "size": 39132,
+      "md5": "36cd06e0b5d63a7e9ee5db23d709e321"
+    },
+    "ch09_984632905_20925587.wav": {
+      "size": 48574,
+      "md5": "ecab0f15ba0ccd41b3bf67f2feb29db8"
+    },
+    "ch09_984632970_20990554.wav": {
+      "size": 10206,
+      "md5": "c3b5d992a41f295fed2ee70405854f63"
+    },
+    "ch09_984633285_21306194.wav": {
+      "size": 23582,
+      "md5": "8bec0ef63ca7db762676fe2ae9e3fd40"
+    },
+    "ch09_984633588_21608916.wav": {
+      "size": 35918,
+      "md5": "1189016884396b4634cc6382865b1f71"
+    },
+    "ch09_984633597_21617822.wav": {
+      "size": 31022,
+      "md5": "da4e93697a7d76aa4fb5cc9a94c002ed"
+    }
+  },
+  "ready": "version=3 mode=0 connected=0 attached=0 channel=9 state=0 listen=0 rssi=-127 error=0 rx_dropped=0 tx_dropped=0 underruns=0 tx_tests=0 tx_marcstate=0 read_errors=0 bt_active=1 bt_phy=0 bt_ready=0 ble_packets=0 ble_ms=0 ble_max=0\r\nrx_rate=3200 carrier_checks=0 sample_drops=0 queue_drops=0 ble_timeouts=0 ble_failures=0 audio_floor=-97 gate_reference=0 gate_ambiguous=0",
+  "passed": true
+}

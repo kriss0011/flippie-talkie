@@ -22,7 +22,7 @@ export class USBLink {
   async open(onData,onClose){
     if(!navigator.serial)throw Error('USB requires Chrome or Edge on a computer. Use Bluetooth for phones.');
     this.port=await navigator.serial.requestPort({filters:[{usbVendorId:0x0483}]});await this.port.open({baudRate:115200});this.writer=this.port.writable.getWriter();this.reader=this.port.readable.getReader();this.closed=false;this.onClose=onClose;this.chain=Promise.resolve();
-    // The Flipper must already have PMR Connect open in USB mode.
+    // The Flipper must already have Flippie Talkie open in USB mode.
     this.reading=(async()=>{try{while(!this.closed){const {value,done}=await this.reader.read();if(done)break;if(value)onData(value);}}catch(e){if(!this.closed)this.error=e;}finally{this.reader.releaseLock();if(!this.closed){this.closed=true;onClose();}}})();
     await this.write(new TextEncoder().encode('\x03\rpmr_connect usb\r'));
   }
