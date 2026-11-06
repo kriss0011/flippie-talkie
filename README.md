@@ -26,6 +26,8 @@ Turn the sound on to hear the radio audio. GitHub starts videos muted.
 
 Reception is experimental. The Flipper's CC1101 chip isn't an FM receiver, so the app uses it as a slope detector. Speech is recognisable but noisy, and it won't match a real radio. [How it works](docs/HOW-IT-WORKS.md) explains why.
 
+**As far as we can tell, this is the first public project to receive analog voice with the Flipper's own CC1101 radio.** Searches in November 2026 found no earlier working example, though that can't prove there isn't one. Slope detection itself is an old technique, and [FMTX](https://github.com/yo3gnd/fmtx) already transmitted FM audio from the CC1101. The [research paper](research/rssi-slope-fm-on-cc1101.md) covers the method, the measurements and the prior work. If you know of earlier work, please [open an issue](https://github.com/kriss0011/flippie-talkie/issues).
+
 ## What you need
 
 - A Flipper Zero with an SD card, running **RogueMaster API 88.23** ([firmware commit `e1837ff`](https://github.com/RogueMaster/flipperzero-firmware-wPlugins/commit/e1837ff6a1a7d5c91a0782343a98e2e600d62da7)). Other firmware needs [its own build](docs/BUILD.md), and the app's Bluetooth code may need changes.

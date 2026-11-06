@@ -8,9 +8,9 @@
     "Flippie Talkie": "0.10"
   },
   "sha256": {
-    "CHANGELOG.md": "ac7c2372222cae8d3c80806aaf56dd39dc766908cb0eaeb13f73c63ec9202206",
+    "CHANGELOG.md": "88412b02ad4e48583f68cab7c3be82eb81f7158c20b95feeec9ebb2a0f6ff9b9",
     "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
-    "README.md": "3f0e8178ad010c45d93d7d2d0c5b652ba2bae8b93f1fc9c76c7f3af59d1aaab2",
+    "README.md": "ddd4048b7fa47242753a913dbf745dc64fb18028ab4da7c095cd3123f2cee100",
     "THIRD_PARTY_NOTICES.md": "7d8c7fff3b9373eac234e2cca4c3d34cfee6b0a83249cbfcc90b1e0c70cd9d69",
     "assets/voice-manifest.json": "988bd3c80d202799daa0067bb42defa27e496cacf43da404cb08062f706d07e3",
     "assets/voice-preview/channel-01.wav": "c663635f08e9c1fde2b969224220a4a5312fe1bb44c30b366fb9ea738ebb3278",
@@ -30,7 +30,7 @@
     "assets/voice-preview/channel-15.wav": "9b195b12ca2e2ef0cde19945f7ac2eb1de634a21890fce29d00329993958d87d",
     "assets/voice-preview/channel-16.wav": "1f1af2e3ebe7069db2e3151f4ae2b1e7a92517f5b343ecc2b2ea365adf8722fa",
     "docs/BUILD.md": "a0e8f2b39dac205d55193555f51d5f04b49b6172bc23d76e120984982b6aca50",
-    "docs/HOW-IT-WORKS.md": "3e4349a0e13c94de04a8fe5a767349491b85c880041535a757a246a42eb21211",
+    "docs/HOW-IT-WORKS.md": "e0ff947e0c33f6c220e574bff89edd24c3a4225fa0bcba41209b4404be9551b7",
     "docs/PROTOCOL.md": "0031099588712e733a351062555c32e935fd25aaab26797af2235e405a4c7717",
     "docs/SPEAK-TEXT.md": "1c147836d9579d32af82589f087984ed01808c7831da1a90fa9b81d073a3f1c8",
     "docs/TROUBLESHOOTING.md": "b91208e4b1ab8ca8a75bc9363c8f5b5cc61d6bcd0eacdefa3e02a75cbdce94ab",
@@ -88,6 +88,14 @@
     "firmware/flippie_talkie/talkie_10px.png": "38a1e37345bcdf2f4558c9acecf2d05702b521edaabff7b72665927e372bddea",
     "package.json": "fd3d7ada15e2b2d356ea8dc630473204691557c948492c235ceeffcfbdb3643d",
     "requirements.txt": "b26c4315ee9e9044d5ca3651dfed8786fec5e409be66d8729fa53c2f09726e5f",
+    "research/README.md": "bb63f4259e0c3d68c69800b4354fa0e8b5ddf94a335a9406b8263fd716210dcd",
+    "research/build.py": "2d60b91c4d2fb0d04f3b89d89a3882beb27c3fcfc5fed2089f22eddc2ceaf4cc",
+    "research/data/offset-sweep.csv": "38c9a9c76ce10f005614a8361e4b6798112b6475a4db556a9d56a05d901141fb",
+    "research/data/rssi-vs-digital.csv": "5f3f3f40779500b1097aec5da779a824a7cbf53ae2d4787a6c28d05659afc892",
+    "research/figures/offset-sweep.svg": "7c432980069725e7ee4eaefa21cdbfd6f7a5c89f218523cc6e04b9a474fb725b",
+    "research/figures/signal-chain.svg": "2d106969056da7ef6b9bb98fc88b2bf9575e2ee784d5e4e8c09291057cac242d",
+    "research/rssi-slope-fm-on-cc1101.md": "e5c842c52919a3ac5ba7b38afe11f0631d0fc8dadd85b2acc2c5851d67276376",
+    "research/rssi-slope-fm-on-cc1101.pdf": "91ae25c45246c1b32e5a10f055da054be29109997f4b09946fdbdc7ee32e7d12",
     "sd/apps/Sub-GHz/Flippie_Talkie.fap": "d48981fab663fa0256468dfbdccc60c4585b21e086722bf76cdf85daed2465d6",
     "sd/apps_data/pmr_radio/voice/ch01.pdm": "b22afc5ff95b6554d9ee2eae0a1ae9840ebecdee3b72bd913f5e36bfd6a3617f",
     "sd/apps_data/pmr_radio/voice/ch02.pdm": "3fe284d58706fc4d006ec905b605c0863ec2952523d7d70f33eda98d2b7f9d8d",
@@ -131,7 +139,7 @@
     "tools/flipper_record.py": "4b5fd9e0f47088a1ac1eaf9e90d72ce37eacd8e803814a7eeda82d58f9e54e1d",
     "tools/flipper_screenshots.py": "23ae87a4a4425f30e0ca57cfb91063ca49b17054b6e06b129893972c30e2a3b3",
     "tools/generate_voice.py": "263422eb497c55656522371b27d0cb62f85554e30c50430e9430beca8e486623",
-    "tools/package_release.py": "48799b489a966edf4b8726c89aefcebba267a2a9761fe789b1404cb134818ebf",
+    "tools/package_release.py": "860be5d98ede6b2f9ba8fd018c94e4984b4ed303838a4110d2683711618e2806",
     "tools/pmr_audio.py": "50994be8d6e3b99fff339bcc907f297f3ff39fd2badffdb46077b670206dff63",
     "tools/setup_sdk.sh": "b9548970529fe82e72013e71132da622b3bba01845189646113d075c17e3b6fb",
     "tools/simulated-flipper.mjs": "b7651709d92224405f107dd3dde0115b76fa0fb967fbaf2cf666551a5661b34e",
@@ -215,6 +223,6 @@
     "web/style.css": "99f77bc3448a9081e6a33def94c668518947066c83d77a875929cda9af772cb3",
     "web/transports.js": "d866b9ae550325ec848f5b84e7083151fca66cb9c2ea98ae84db55c016513965",
     "web/tx-timing.js": "f470405d7d1e655319d3138d0aeb02f1f872141c0a98bdff318498561cea8ca1",
-    "releases/Flippie-Talkie-v0.10.zip": "62b8ef184fd20090d8cbb114bb0db79f90f53ab45fc0a26e6dff6dacd760f416"
+    "releases/Flippie-Talkie-v0.10.zip": "567928b06bc56206fe3c6f651ccf2a0d0a19671be3a52684eaf1375c7f93a432"
   }
 }

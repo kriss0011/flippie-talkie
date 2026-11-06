@@ -23,6 +23,8 @@ The CC1101 can't output FM audio, but it does report signal strength (RSSI). The
 
 The app samples RSSI at 8 kHz, filters it and resamples it to 3.2 kHz for Bluetooth or 4 kHz for USB. Getting recognisable speech out of this depended on sample timing, filter state and tuning. It stays noisy, and software can't recover speech that never reached the radio.
 
+The [research paper](../research/rssi-slope-fm-on-cc1101.md) has the register settings, measurements and limits.
+
 ## Transmitting
 
 The radio has no analog FM input either. The app turns audio into a stream of one-bit pulses at a nominal 48 kHz (pulse-density modulation) and uses it to switch the CC1101's FSK output between two frequencies, which averages out to frequency-modulated voice.

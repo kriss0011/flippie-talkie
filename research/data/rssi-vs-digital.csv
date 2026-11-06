@@ -1,0 +1,13 @@
+capture,channel,tone_hz,max_snr_db,median_snr_db
+silent-carrier-baseline,rssi,500,7.0,5.9
+silent-carrier-baseline,rssi,1000,11.5,6.7
+silent-carrier-baseline,rssi,2000,8.2,5.4
+silent-carrier-baseline,digital,500,10.2,6.1
+silent-carrier-baseline,digital,1000,7.0,3.6
+silent-carrier-baseline,digital,2000,7.1,4.7
+tone-transmission-1,rssi,500,31.4,8.4
+tone-transmission-1,rssi,1000,32.5,8.2
+tone-transmission-1,rssi,2000,34.7,7.2
+tone-transmission-1,digital,500,15.8,2.5
+tone-transmission-1,digital,1000,24.2,1.0
+tone-transmission-1,digital,2000,29.5,3.8

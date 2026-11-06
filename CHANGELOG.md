@@ -3,6 +3,7 @@
 ## Unreleased
 
 **Documentation**
+- Added a [research paper](research/rssi-slope-fm-on-cc1101.md) on receiving FM voice with the CC1101, with its data and prior work.
 - The README now explains how to allow transmitting, which the firmware blocks on 446 MHz by default.
 
 **Web app redesign**
