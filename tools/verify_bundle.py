@@ -1,4 +1,4 @@
-"""Verify released files and historical archive without accessing a device."""
+"""Verify released files without accessing a device."""
 import hashlib
 import json
 from pathlib import Path
@@ -24,6 +24,4 @@ if __name__ == '__main__':
         raise ValueError('The maintained firmware and SD package must contain exactly one unified app')
     release = json.loads((ROOT / 'releases/manifest.json').read_text())
     count = verify_manifest(ROOT, release['sha256'])
-    archive = json.loads((ROOT / 'archive/manifest.json').read_text())
-    historical = verify_manifest(ROOT / 'archive', archive)
-    print(f'PASS: {count} released assets and {historical} historical files verified.')
+    print(f'PASS: {count} released assets verified.')

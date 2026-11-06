@@ -67,7 +67,7 @@ class CLI:
 
     def write_new_file(self, path, data):
         status = self.command(f'storage stat "{path}"')
-        if 'file/dir not exist' not in status:
+        if not any(message in status for message in ("file/dir not exist", "file/dir doesn't exist")):
             raise RuntimeError(f'Refusing to overwrite or uncertain target: {status}')
         for offset in range(0,len(data),4096):
             chunk=data[offset:offset+4096]

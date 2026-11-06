@@ -42,6 +42,11 @@ try:
   if 22 in m:
    frame=dict(fields(m[22]))[1];break
  send(2,21);send(3,19)
+ # The pipe-based RPC CLI checks the close flag after its next read.
+ # Wait for StopSession acknowledgement, then wake that read.
+ for _ in range(20):
+  if message().get(1)==3:break
+ c.s.write(b'\r')
  c.until(b'>: ',10)
  assert frame is not None and len(frame)==1024
  im=Image.new('RGB',(128,64),(240,175,30))

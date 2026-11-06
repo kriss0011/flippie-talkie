@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo_root="$(cd "$(dirname "$0")/.." && pwd)"
-sdk_path="${PMR_SDK_DIR:-$repo_root/.cache/xtreme-firmware}"
-firmware_revision=6523edcc65af2fa1a72e0dc3b0bb1f9929744877
+sdk_path="${PMR_SDK_DIR:-$repo_root/.cache/roguemaster-firmware}"
+firmware_revision=e1837ff6a1a7d5c91a0782343a98e2e600d62da7
 if [[ ! -f "$sdk_path/fbt" ]]; then
     echo 'Run bash tools/setup_sdk.sh first (or set PMR_SDK_DIR).' >&2
     exit 1
@@ -21,7 +21,7 @@ if [[ -d "$target" ]] && ! diff -qr "$repo_root/firmware/$app" "$target" >/dev/n
 fi
 mkdir -p "$target"
 cp "$repo_root/firmware/$app/"* "$target/"
-(cd "$sdk_path" && FBT_NO_SYNC=1 ./fbt build "APPSRC=applications_user/$app")
+(cd "$sdk_path" && FBT_NO_SYNC=1 ./fbt "--options=$repo_root/tools/fbt_roguemaster.py" build "APPSRC=applications_user/$app")
 cp "$sdk_path/build/f7-firmware-C/.extapps/$app.fap" "$repo_root/build/sd/apps/Sub-GHz/Flippie_Talkie.fap"
 mkdir -p "$repo_root/build/sd/apps_data/pmr_radio"
 cp -R "$repo_root/sd/apps_data/pmr_radio/voice" "$repo_root/build/sd/apps_data/pmr_radio/"

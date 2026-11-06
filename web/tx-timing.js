@@ -1,6 +1,14 @@
 export const TX_LEAD_IN_MS = 500;
 // Stop is acknowledged by the radio after its queued speech and lead-in drain.
-export async function waitForTxIdle({epoch, getStatus, isReady, signal, now = () => performance.now(), delay = ms => new Promise(resolve => setTimeout(resolve, ms)), timeoutMs = 2500}) {
+export async function waitForTxIdle({
+  epoch,
+  getStatus,
+  isReady,
+  signal,
+  now = () => performance.now(),
+  delay = ms => new Promise(resolve => setTimeout(resolve, ms)),
+  timeoutMs = 2500,
+}) {
   const deadline = now() + timeoutMs;
   while (now() < deadline) {
     if (signal?.aborted) throw Error('Transmission stopped.');

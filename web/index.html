@@ -1,55 +1,276 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#000000"><title>Flippie Talkie</title><link rel="stylesheet" href="style.css?v=0.8"><link rel="icon" href="data:,"></head>
-<body>
-<header><a class="brand" href="./" aria-label="Flippie Talkie home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8V2m8 7V5M6 9h12v13H6zM9 13h6m-6 4h6"/></svg>Flippie Talkie</a><span class="device" id="device">Flipper radio</span></header>
-<main>
-<div class="title-row"><div><h1>Your radio, within reach.</h1><p>Listen and talk from this device.</p></div><span class="connection" id="connection">Disconnected</span></div>
-<section class="connection-panel" aria-label="Connection">
-<div class="connect-settings"><label for="transport">Connection</label><select id="transport"><option value="bluetooth">Bluetooth</option><option value="usb">USB</option></select></div>
-<button class="primary" id="connect">Connect Flipper</button>
-<p class="connection-help" id="connection-help">Open Flippie Talkie on your Flipper, select Bluetooth, then connect here.</p>
-</section>
-<div class="notice-slot"><p id="notice" role="status" hidden></p></div>
-<div class="radio-layout">
-<section class="radio-panel" aria-label="Radio controls">
-<div class="section-row"><h2>PMR radio</h2><span class="signal" id="signal">No signal reading</span></div>
-<div class="channel-row"><button class="step" id="previous" aria-label="Previous channel" disabled>−</button><div class="channel"><label for="channel">Channel</label><select id="channel" disabled aria-label="PMR channel"></select><span id="frequency">446.10625 MHz</span></div><button class="step" id="next" aria-label="Next channel" disabled>+</button></div>
-<div class="air-state"><span class="state-dot" id="state-dot"></span><span id="radio-state" aria-live="polite">Connect to use your radio</span></div>
-<button id="listen" class="listen secondary" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-3a8 8 0 0 1 16 0v3M4 12H2v7h4v-7H4zm16 0h2v7h-4v-7h2z"/></svg><span>Start listening</span></button>
-<div class="volume-row"><label for="volume">Speaker</label><input id="volume" type="range" min="0" max="100" value="80"><output id="volume-value" for="volume">80%</output></div>
-<div class="squelch-control"><div class="squelch-label"><label for="squelch">Squelch</label><output id="squelch-value" for="squelch">−95 dBm</output></div><input id="squelch" type="range" min="-111" max="-40" step="1" value="-95" aria-describedby="squelch-help"><p id="squelch-help">Raise until static stops. Lower to hear weaker signals. Saved for each channel.</p></div>
-</section>
-<section class="talk-panel" aria-label="Microphone controls">
-<div class="section-row"><h2>Your microphone</h2><button id="mic" class="text-button" disabled>Enable microphone</button></div>
-<p class="mic-help" id="mic-help">Enable your microphone before talking.</p>
-<div class="meter" role="meter" aria-label="Microphone level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><span></span></div>
-<button id="ptt" class="ptt" disabled aria-describedby="ptt-help"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="12" y="3" width="8" height="16" rx="4"/><path d="M7 15v2a9 9 0 0 0 18 0v-2M16 26v4m-5 0h10"/></svg><strong id="ptt-label">Hold to talk</strong><span id="ptt-detail">Channel 9</span></button>
-<p id="ptt-help">Hold to talk. Release to finish your message.</p>
-</section>
-</div>
-<section class="recordings-panel" aria-labelledby="recordings-title">
-<div class="section-row"><h2 id="recordings-title">Incoming recordings</h2><label class="record-toggle"><input id="auto-record" type="checkbox" role="switch"> Auto-record</label></div>
-<p id="recording-status" role="status">Auto-record is off.</p>
-<p class="recording-help">Each received transmission that passes squelch becomes a WAV file. Stored only in this browser. Download anything you want to keep.</p>
-<div class="recording-summary"><span id="recording-count">0 saved · 0.0 MB</span><span id="playing-label">Choose a recording to play.</span></div>
-<audio id="recording-player" controls preload="none" aria-label="Recording playback"></audio>
-<p id="recordings-empty">Your recordings will appear here.</p><ul id="recordings-list" aria-label="Saved transmissions"></ul>
-</section>
-<section class="message-panel" aria-labelledby="message-title">
-<div class="section-row"><h2 id="message-title">Your recorded message</h2><button id="record-message" class="secondary">Record message</button></div>
-<p id="message-status" role="status">Record once, preview it, then send it as many times as you need.</p>
-<audio id="message-preview" controls preload="none" aria-label="Your recorded message preview"></audio>
-<div class="repeat-settings">
-<label>Repeat by<select id="repeat-mode"><option value="count">Number of sends</option><option value="duration">Running time</option></select></label>
-<label id="repeat-count-row">Total sends<input id="repeat-count" type="number" min="1" max="1000" value="3" inputmode="numeric"></label>
-<div id="repeat-duration-row" hidden><label for="repeat-duration">Run for</label><div class="number-unit"><input id="repeat-duration" type="number" min="1" max="3600" value="2" inputmode="numeric"><select id="repeat-duration-unit" aria-label="Running time unit"><option value="60000">minutes</option><option value="1000">seconds</option></select></div></div>
-<div><label for="repeat-gap">Pause between sends</label><div class="number-unit"><input id="repeat-gap" type="number" min="1" max="3600" value="5" inputmode="numeric"><select id="repeat-gap-unit" aria-label="Pause unit"><option value="1000">seconds</option><option value="60000">minutes</option></select></div></div>
-</div>
-<div class="message-buttons"><button id="send-message" class="primary" disabled>Start repeats</button><button id="stop-message" class="secondary" disabled>Stop</button></div>
-<p class="recording-help">Uses the selected channel. The pause starts after each message. Keep this page in front; switching away or disconnecting stops repeats. Busy channels are retried after the pause. Up to 45 seconds per message; timed runs up to 60 minutes.</p>
-</section>
-<details class="help"><summary>Connecting a phone or computer</summary><div><p><strong>Android and computers:</strong> use Chrome. <strong>iPhone and iPad:</strong> open this page in <a href="https://bluefy.app/" target="_blank" rel="noreferrer">Bluefy</a>. Safari cannot connect directly over Bluetooth.</p><p>Keep this page in front while using the radio. Confirm any pairing prompt on the Flipper. Close the official Flipper mobile app if it is already connected.</p><p>On your other walkie-talkie, select the same channel and turn privacy codes off. Receiving uses the experimental Flipper receiver, so some noise remains.</p><p>Squelch filters weaker signals using the Flipper’s reported signal strength. Drag fully left for Off. Strong interference can still pass. Keep the page in front for reception and recording; browser data can be cleared, so download important clips. Long transmissions are saved in consecutive ten-minute parts.</p><p>App 0.8 adds half a second of silence before speech so the other radio can open its audio. Speech is buffered during that lead-in. Releasing PTT finishes the queued speech; Stop cancels immediately.</p><p id="diagnostics">No live connection.</p></div></details>
-<footer>Flippie Talkie Web 0.8 · Audio travels directly between this device and your Flipper.</footer>
-</main><script type="module" src="app.js?v=0.8"></script>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Listen and talk through a Flipper Zero PMR446 radio from your browser."
+    />
+    <title>Flippie Talkie</title>
+    <link rel="stylesheet" href="style.css?v=0.9" />
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="./" aria-label="Flippie Talkie home">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 8V2m8 7V5M6 9h12v13H6zM9 13h6m-6 4h6" />
+        </svg>
+        Flippie Talkie
+      </a>
+      <div class="top-actions">
+        <p class="link-state"><span id="connection">Not connected</span><span id="device"></span></p>
+        <button class="secondary compact" id="disconnect" hidden>Disconnect</button>
+      </div>
+    </header>
+
+    <main>
+      <h1 class="visually-hidden">Flippie Talkie radio controls</h1>
+      <p id="notice" role="status" hidden></p>
+
+      <section class="panel connect-panel" aria-labelledby="connect-title">
+        <div class="connect-row">
+          <h2 id="connect-title">Connect your Flipper</h2>
+          <div class="connect-controls">
+            <label for="transport">Connect by</label>
+            <select id="transport">
+              <option value="bluetooth">Bluetooth</option>
+              <option value="usb">USB</option>
+            </select>
+            <button class="primary" id="connect">Connect Flipper</button>
+          </div>
+        </div>
+        <ol class="steps" id="steps-bluetooth">
+          <li>On the Flipper, open Flippie Talkie. In <b>Settings</b>, set Connection to Bluetooth.</li>
+          <li>Go back and open <b>Browser link</b>.</li>
+          <li>Select <b>Connect Flipper</b> here, pick your Flipper and confirm any pairing code.</li>
+        </ol>
+        <ol class="steps" id="steps-usb" hidden>
+          <li>On the Flipper, open Flippie Talkie. In <b>Settings</b>, set Connection to USB.</li>
+          <li>Go back, open <b>Browser link</b> and plug in the USB cable. Close qFlipper.</li>
+          <li>Select <b>Connect Flipper</b> here and pick the Flipper’s serial port.</li>
+        </ol>
+      </section>
+
+      <div class="radio-layout">
+        <section class="panel radio-panel" aria-labelledby="radio-title">
+          <div class="section-row">
+            <h2 id="radio-title">Radio</h2>
+            <span class="signal" id="signal">No signal reading</span>
+          </div>
+          <div class="channel-row">
+            <button class="step" id="previous" aria-label="Previous channel" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12" /></svg>
+            </button>
+            <div class="channel">
+              <label for="channel">Channel</label>
+              <select id="channel" disabled></select>
+              <span id="frequency">446.10625 MHz</span>
+            </div>
+            <button class="step" id="next" aria-label="Next channel" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12M12 6v12" /></svg>
+            </button>
+          </div>
+          <div class="air-state">
+            <span class="state-dot" id="state-dot"></span>
+            <span id="radio-state" aria-live="polite">Connect to use your radio</span>
+          </div>
+          <button id="listen" class="listen secondary" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 14v-3a8 8 0 0 1 16 0v3M4 12H2v7h4v-7H4zm16 0h2v7h-4v-7h2z" />
+            </svg>
+            <span>Start listening</span>
+          </button>
+          <div class="volume-row">
+            <label for="volume">Volume</label>
+            <input id="volume" type="range" min="0" max="100" value="80" />
+            <output id="volume-value" for="volume">80%</output>
+          </div>
+          <div class="squelch-control">
+            <div class="squelch-label">
+              <label for="squelch">Squelch</label>
+              <output id="squelch-value" for="squelch">−95 dBm</output>
+            </div>
+            <input
+              id="squelch"
+              type="range"
+              min="-111"
+              max="-40"
+              step="1"
+              value="-95"
+              aria-describedby="squelch-help"
+            />
+            <p class="fine" id="squelch-help">
+              Raise it until the static stops. Lower it to hear weaker signals. Saved per channel.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel talk-panel" aria-labelledby="talk-title">
+          <div class="section-row">
+            <h2 id="talk-title">Talk</h2>
+            <button id="mic" class="secondary compact" disabled>Enable microphone</button>
+          </div>
+          <p class="mic-help" id="mic-help">Enable your microphone before talking.</p>
+          <div
+            class="meter"
+            role="meter"
+            aria-label="Microphone level"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            id="meter"
+          >
+            <span></span>
+          </div>
+          <button id="ptt" class="ptt" disabled aria-describedby="ptt-help">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <rect x="12" y="3" width="8" height="16" rx="4" />
+              <path d="M7 15v2a9 9 0 0 0 18 0v-2M16 26v4m-5 0h10" />
+            </svg>
+            <strong id="ptt-label">Hold to talk</strong>
+            <span id="ptt-detail">Channel 9</span>
+          </button>
+          <p class="fine centered" id="ptt-help">
+            Release to listen again.<span class="keyboard-only"> The space bar works too.</span>
+          </p>
+        </section>
+      </div>
+
+      <section class="panel" aria-labelledby="recordings-title">
+        <div class="section-row">
+          <h2 id="recordings-title">Recordings</h2>
+          <label class="record-toggle">
+            <input id="auto-record" type="checkbox" role="switch" />
+            Auto-record
+          </label>
+        </div>
+        <p class="state-line" id="recording-status" role="status">Auto-record is off.</p>
+        <p class="fine">
+          Saves each transmission that passes squelch as a WAV in this browser only. Download
+          anything you want to keep.
+        </p>
+        <p class="empty" id="recordings-empty">No recordings yet.</p>
+        <div class="recording-summary" id="recording-summary" hidden>
+          <span id="recording-count">0 saved · 0.0 MB</span>
+          <span id="playing-label">Choose a recording to play.</span>
+        </div>
+        <audio id="recording-player" controls preload="none" aria-label="Recording playback" hidden></audio>
+        <ul id="recordings-list" aria-label="Saved transmissions"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="message-title">
+        <div class="section-row">
+          <h2 id="message-title">Repeat a message</h2>
+          <button id="record-message" class="secondary compact">Record message</button>
+        </div>
+        <p class="state-line" id="message-status" role="status">
+          Record once, preview it, then send it on repeat.
+        </p>
+        <div class="repeat-body" id="repeat-body" hidden>
+          <audio id="message-preview" controls preload="none" aria-label="Preview your message"></audio>
+          <div class="repeat-settings">
+            <label>
+              Repeat for
+              <select id="repeat-mode">
+                <option value="count">A number of sends</option>
+                <option value="duration">A length of time</option>
+              </select>
+            </label>
+            <label id="repeat-count-row">
+              Sends
+              <input id="repeat-count" type="number" min="1" max="1000" value="3" inputmode="numeric" />
+            </label>
+            <div id="repeat-duration-row" hidden>
+              <label for="repeat-duration">Run for</label>
+              <div class="number-unit">
+                <input
+                  id="repeat-duration"
+                  type="number"
+                  min="1"
+                  max="3600"
+                  value="2"
+                  inputmode="numeric"
+                />
+                <select id="repeat-duration-unit" aria-label="Running time unit">
+                  <option value="60000">minutes</option>
+                  <option value="1000">seconds</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="repeat-gap">Pause between sends</label>
+              <div class="number-unit">
+                <input id="repeat-gap" type="number" min="1" max="3600" value="5" inputmode="numeric" />
+                <select id="repeat-gap-unit" aria-label="Pause unit">
+                  <option value="1000">seconds</option>
+                  <option value="60000">minutes</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="message-buttons">
+            <button id="send-message" class="primary" disabled>Start sending</button>
+            <button id="stop-message" class="secondary" disabled>Stop</button>
+          </div>
+          <p class="fine">
+            Sends on the selected channel and waits out the pause if the channel is busy. Channels
+            are shared, so leave room for others. Keep this page in front: switching away or
+            disconnecting stops sending.
+          </p>
+        </div>
+        <p class="fine">Messages can be up to 45 seconds. Timed runs can last up to 60 minutes.</p>
+      </section>
+
+      <details class="help">
+        <summary>Help</summary>
+        <div>
+          <h3>Browsers</h3>
+          <p>
+            Use Chrome on Android or a computer. Edge also works over USB. On iPhone and iPad, open
+            this page in
+            <a href="https://bluefy.app/" target="_blank" rel="noreferrer">Bluefy</a>; Safari can’t
+            connect to Bluetooth devices.
+          </p>
+          <h3>Connecting</h3>
+          <p>
+            Keep this page in front while you use the radio. Close the official Flipper mobile app
+            and qFlipper first, because only one app can hold the connection.
+          </p>
+          <h3>Your other radio</h3>
+          <p>
+            Select the same channel and turn privacy codes off (code 0). Reception uses the
+            Flipper’s experimental receiver, so some noise is normal.
+          </p>
+          <h3>Squelch and recording</h3>
+          <p>
+            Squelch filters by the signal strength the Flipper reports, so strong interference can
+            still pass. Drag it fully left to turn it off. Long transmissions save as consecutive
+            ten-minute parts. Browser data can be cleared, so download clips you care about.
+          </p>
+          <h3>Talking</h3>
+          <p>
+            The Flipper sends half a second of silence first so the other radio has time to open.
+            Your opening words are held and sent right after it. Releasing finishes what’s queued;
+            Stop cancels at once.
+          </p>
+          <h3>Rules</h3>
+          <p>
+            The Flipper isn’t a certified PMR446 radio. You’re responsible for following local radio
+            rules before you transmit or record.
+          </p>
+          <h3>Link details</h3>
+          <p id="diagnostics">No live connection.</p>
+        </div>
+      </details>
+
+      <footer>
+        Flippie Talkie Web 0.9 · Audio goes directly between this device and your Flipper ·
+        <a href="https://github.com/kriss0011/flippie-talkie">Source code</a>
+      </footer>
+    </main>
+    <script type="module" src="app.js?v=0.9"></script>
+  </body>
+</html>

@@ -6,7 +6,8 @@ App(
     stack_size=6144,
     fap_category="Sub-GHz",
     fap_icon="talkie_10px.png",
-    fap_version=(0, 5),
+    fap_version=(0, 9),
     fap_description="PMR radio: speaker, SD recording, Bluetooth/USB audio and push-to-talk",
     fap_author="Flippie Talkie",
+    fap_weburl="https://github.com/kriss0011/flippie-talkie",
 )

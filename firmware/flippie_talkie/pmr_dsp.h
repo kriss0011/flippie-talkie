@@ -10,38 +10,48 @@ typedef struct {
 } PmrDsp;
 
 static inline void pmr_dsp_reset(PmrDsp* dsp) {
-    uint32_t clips=dsp->clips;
-    memset(dsp,0,sizeof(*dsp));dsp->clips=clips;
+    uint32_t clips = dsp->clips;
+    memset(dsp, 0, sizeof(*dsp));
+    dsp->clips = clips;
 }
 
 // 8 kHz fourth-order Butterworth 180--2600 Hz, then 450 Hz de-emphasis.
 // Fixed gain; bounded, single-precision hardware math in the sampling ISR.
-static inline int16_t pmr_dsp_sample(PmrDsp* dsp,float input) {
-    static const float sos[4][5]={
-        {0.1716654185f,0.3433308369f,0.1716654185f,0.4249237684f,0.08876643942f},
-        {1.0f,2.0f,1.0f,0.6758644406f,0.5181823407f},
-        {1.0f,-2.0f,1.0f,-1.736551196f,0.7570048238f},
-        {1.0f,-2.0f,1.0f,-1.884462224f,0.9038779476f},
+static inline int16_t pmr_dsp_sample(PmrDsp* dsp, float input) {
+    static const float sos[4][5] = {
+        {0.1716654185f, 0.3433308369f, 0.1716654185f, 0.4249237684f, 0.08876643942f},
+        {1.0f, 2.0f, 1.0f, 0.6758644406f, 0.5181823407f},
+        {1.0f, -2.0f, 1.0f, -1.736551196f, 0.7570048238f},
+        {1.0f, -2.0f, 1.0f, -1.884462224f, 0.9038779476f},
     };
-    if(!dsp->initialized) {dsp->baseline=input;dsp->initialized=true;}
-    float x=input-dsp->baseline;
-    for(uint32_t i=0;i<4;i++) {
-        float y=sos[i][0]*x+dsp->z[i][0];
-        dsp->z[i][0]=sos[i][1]*x-sos[i][3]*y+dsp->z[i][1];
-        dsp->z[i][1]=sos[i][2]*x-sos[i][4]*y;
-        x=y;
+    if(!dsp->initialized) {
+        dsp->baseline = input;
+        dsp->initialized = true;
     }
-    dsp->deemphasis+=0.2977242695f*(x-dsp->deemphasis);
-    float y=dsp->deemphasis*6000.0f;
-    if(dsp->fade<80) y*=(float)++dsp->fade/80.0f;
-    if(y>32767.0f) {dsp->clips++;y=32767.0f;}
-    if(y< -32767.0f) {dsp->clips++;y=-32767.0f;}
+    float x = input - dsp->baseline;
+    for(uint32_t i = 0; i < 4; i++) {
+        float y = sos[i][0] * x + dsp->z[i][0];
+        dsp->z[i][0] = sos[i][1] * x - sos[i][3] * y + dsp->z[i][1];
+        dsp->z[i][1] = sos[i][2] * x - sos[i][4] * y;
+        x = y;
+    }
+    dsp->deemphasis += 0.2977242695f * (x - dsp->deemphasis);
+    float y = dsp->deemphasis * 6000.0f;
+    if(dsp->fade < 80) y *= (float)++dsp->fade / 80.0f;
+    if(y > 32767.0f) {
+        dsp->clips++;
+        y = 32767.0f;
+    }
+    if(y < -32767.0f) {
+        dsp->clips++;
+        y = -32767.0f;
+    }
     return (int16_t)y;
 }
 
 // Restore the pre-boost speaker mapping. Volume is linear; quiet samples are
 // not expanded, and the speaker uses the same de-emphasized PCM as the WAV.
-static inline uint32_t pmr_speaker_duty(int16_t pcm,uint32_t volume) {
-    if(volume>8) volume=8;
-    return (uint32_t)(512+(int32_t)pcm*(int32_t)volume/1024);
+static inline uint32_t pmr_speaker_duty(int16_t pcm, uint32_t volume) {
+    if(volume > 8) volume = 8;
+    return (uint32_t)(512 + (int32_t)pcm * (int32_t)volume / 1024);
 }
