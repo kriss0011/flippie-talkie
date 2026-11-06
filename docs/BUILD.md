@@ -108,7 +108,7 @@ bash tools/build.sh
 python tools/flipper_screenshots.py docs/images
 ```
 
-**Web screens** run against a simulated Flipper in headless Chrome, so they need no hardware:
+**Web screens** run against a simulated Flipper in headless Chrome, which streams synthetic speech as real encoded audio, so they need no hardware:
 
 ```sh
 npm install --no-save puppeteer-core
@@ -117,6 +117,12 @@ node tools/web_screenshots.mjs docs/images
 ```
 
 Set `CHROME` if Chrome isn't in the default macOS location.
+
+The same setup checks that the talk button never moves, in every state at every screen size:
+
+```sh
+node tools/web_talk_button_check.mjs
+```
 
 ## Formatting
 

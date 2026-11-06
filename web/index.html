@@ -3,119 +3,182 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#050505" />
     <meta
       name="description"
       content="Listen and talk through a Flipper Zero PMR446 radio from your browser."
     />
     <title>Flippie Talkie</title>
-    <link rel="stylesheet" href="style.css?v=0.9" />
-    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="style.css?v=0.10.1" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23050505'/%3E%3Cpath d='M3 16h4l2-9 3 13 3-16 2 12h4' fill='none' stroke='%23fff' stroke-width='1.6'/%3E%3C/svg%3E"
+    />
   </head>
   <body>
     <header class="top">
-      <a class="brand" href="./" aria-label="Flippie Talkie home">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M8 8V2m8 7V5M6 9h12v13H6zM9 13h6m-6 4h6" />
-        </svg>
-        Flippie Talkie
-      </a>
+      <a class="brand" href="./" aria-label="Flippie Talkie home">Flippie Talkie</a>
+      <div class="code" id="state-strip" aria-hidden="true">
+        <i class="link" title="Linked"></i><i class="listen" title="Listening"></i
+        ><i class="rx" title="Receiving"></i><i class="tx" title="Transmitting"></i>
+      </div>
       <div class="top-actions">
         <p class="link-state"><span id="connection">Not connected</span><span id="device"></span></p>
         <button class="secondary compact" id="disconnect" hidden>Disconnect</button>
       </div>
     </header>
 
-    <main>
+    <main class="desk">
       <h1 class="visually-hidden">Flippie Talkie radio controls</h1>
       <p id="notice" role="status" hidden></p>
 
-      <section class="panel connect-panel" aria-labelledby="connect-title">
-        <div class="connect-row">
-          <h2 id="connect-title">Connect your Flipper</h2>
-          <div class="connect-controls">
-            <label for="transport">Connect by</label>
-            <select id="transport">
-              <option value="bluetooth">Bluetooth</option>
-              <option value="usb">USB</option>
-            </select>
-            <button class="primary" id="connect">Connect Flipper</button>
+      <div class="air">
+        <section class="connect-panel" aria-labelledby="connect-title">
+          <div class="connect-row">
+            <h2 id="connect-title">Connect your Flipper</h2>
+            <div class="connect-controls">
+              <label for="transport">Connect by</label>
+              <select id="transport">
+                <option value="bluetooth">Bluetooth</option>
+                <option value="usb">USB</option>
+              </select>
+              <button class="primary" id="connect">Connect Flipper</button>
+            </div>
           </div>
-        </div>
-        <ol class="steps" id="steps-bluetooth">
-          <li>On the Flipper, open Flippie Talkie. In <b>Settings</b>, set Connection to Bluetooth.</li>
-          <li>Go back and open <b>Browser link</b>.</li>
-          <li>Select <b>Connect Flipper</b> here, pick your Flipper and confirm any pairing code.</li>
-        </ol>
-        <ol class="steps" id="steps-usb" hidden>
-          <li>On the Flipper, open Flippie Talkie. In <b>Settings</b>, set Connection to USB.</li>
-          <li>Go back, open <b>Browser link</b> and plug in the USB cable. Close qFlipper.</li>
-          <li>Select <b>Connect Flipper</b> here and pick the Flipper’s serial port.</li>
-        </ol>
-      </section>
+          <ol class="steps" id="steps-bluetooth">
+            <li>On the Flipper, open Flippie Talkie. In <b>Settings</b>, set Connection to Bluetooth.</li>
+            <li>Go back and open <b>Browser link</b>.</li>
+            <li>Select <b>Connect Flipper</b> here, pick your Flipper and confirm any pairing code.</li>
+          </ol>
+          <ol class="steps" id="steps-usb" hidden>
+            <li>On the Flipper, open Flippie Talkie. In <b>Settings</b>, set Connection to USB.</li>
+            <li>Go back, open <b>Browser link</b> and plug in the USB cable. Close qFlipper.</li>
+            <li>Select <b>Connect Flipper</b> here and pick the Flipper’s serial port.</li>
+          </ol>
+        </section>
 
-      <div class="radio-layout">
-        <section class="panel radio-panel" aria-labelledby="radio-title">
+        <section class="field" aria-labelledby="air-title">
+          <div class="plot-head">
+            <h2 id="air-title">On the air</h2>
+            <ul class="legend">
+              <li><i class="rx"></i>Received</li>
+              <li><i class="gated"></i>Below squelch</li>
+              <li><i class="tx"></i>You</li>
+            </ul>
+          </div>
+          <canvas
+            id="pulse"
+            role="img"
+            aria-label="Spectrogram of recent audio, newest at the front. The radio state is given as text in the Radio section."
+          ></canvas>
+          <div class="scale" aria-hidden="true">
+            <span>0</span><span>0.6</span><span>1.2</span><span>1.8</span><span>2.4 kHz</span>
+          </div>
+          <div class="lanes">
+            <div class="lane">
+              <span>Received</span>
+              <canvas id="wave-rx" role="img" aria-label="Waveform of received audio"></canvas>
+            </div>
+            <div class="lane">
+              <span>Microphone</span>
+              <canvas id="wave-mic" role="img" aria-label="Waveform of your microphone"></canvas>
+            </div>
+            <div class="scale lane-scale" aria-hidden="true"><span>30 s ago</span><span>Now</span></div>
+          </div>
+          <div class="timeline">
+            <span>Air</span>
+            <div id="air-strip"></div>
+            <div class="scale lane-scale" aria-hidden="true">
+              <span>3 min ago</span><span>Now</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="rail">
+        <section class="radio-panel" aria-labelledby="radio-title">
           <div class="section-row">
             <h2 id="radio-title">Radio</h2>
-            <span class="signal" id="signal">No signal reading</span>
+            <div class="air-state">
+              <span class="state-dot" id="state-dot"></span>
+              <span id="radio-state" aria-live="polite">Connect to use your radio</span>
+            </div>
           </div>
           <div class="channel-row">
-            <button class="step" id="previous" aria-label="Previous channel" disabled>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12" /></svg>
-            </button>
-            <div class="channel">
+            <div class="channel" id="channel-box">
               <label for="channel">Channel</label>
               <select id="channel" disabled></select>
               <span id="frequency">446.10625 MHz</span>
             </div>
-            <button class="step" id="next" aria-label="Next channel" disabled>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12M12 6v12" /></svg>
-            </button>
+            <div class="steppers">
+              <button class="step" id="next" aria-label="Next channel" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12M12 6v12" /></svg>
+              </button>
+              <button class="step" id="previous" aria-label="Previous channel" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12" /></svg>
+              </button>
+            </div>
           </div>
-          <div class="air-state">
-            <span class="state-dot" id="state-dot"></span>
-            <span id="radio-state" aria-live="polite">Connect to use your radio</span>
-          </div>
-          <button id="listen" class="listen secondary" disabled>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 14v-3a8 8 0 0 1 16 0v3M4 12H2v7h4v-7H4zm16 0h2v7h-4v-7h2z" />
-            </svg>
-            <span>Start listening</span>
-          </button>
+          <button id="listen" class="listen secondary" disabled><span>Start listening</span></button>
           <div class="volume-row">
             <label for="volume">Volume</label>
             <input id="volume" type="range" min="0" max="100" value="80" />
             <output id="volume-value" for="volume">80%</output>
           </div>
-          <div class="squelch-control">
-            <div class="squelch-label">
-              <label for="squelch">Squelch</label>
-              <output id="squelch-value" for="squelch">−95 dBm</output>
+          <div class="signal-control">
+            <div class="signal-labels">
+              <span>Signal <b id="signal">No reading</b></span>
+              <span>
+                <label for="squelch">Squelch</label>
+                <output id="squelch-value" for="squelch">−95 dBm</output>
+              </span>
             </div>
-            <input
-              id="squelch"
-              type="range"
-              min="-111"
-              max="-40"
-              step="1"
-              value="-95"
-              aria-describedby="squelch-help"
-            />
+            <div class="signal-scale" id="signal-scale">
+              <div class="signal-bars" id="signal-bars" aria-hidden="true"></div>
+              <input
+                id="squelch"
+                type="range"
+                min="-111"
+                max="-40"
+                step="1"
+                value="-95"
+                aria-describedby="squelch-help"
+              />
+            </div>
             <p class="fine" id="squelch-help">
-              Raise it until the static stops. Lower it to hear weaker signals. Saved per channel.
+              Set the marker just above the static. Signals past it light up and play. Saved per
+              channel.
             </p>
           </div>
         </section>
+      </div>
 
-        <section class="panel talk-panel" aria-labelledby="talk-title">
-          <div class="section-row">
-            <h2 id="talk-title">Talk</h2>
-            <button id="mic" class="secondary compact" disabled>Enable microphone</button>
-          </div>
-          <p class="mic-help" id="mic-help">Enable your microphone before talking.</p>
+      <section class="dock" aria-label="Talk">
+        <div class="dock-note">
+          <p id="mic-help">Enable your microphone before talking.</p>
+          <p class="fine" id="ptt-help">
+            Release to listen again.<span class="keyboard-only"> The space bar works too.</span>
+          </p>
+        </div>
+        <button id="mic" class="mic" disabled aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="9" y="3" width="6" height="11" />
+            <path d="M5 11v2a7 7 0 0 0 14 0v-2M12 20v2" />
+            <path class="mic-off" d="M4 4l16 16" />
+          </svg>
+          <span id="mic-label">Enable microphone</span>
+        </button>
+        <div class="ptt-wrap">
+          <button id="ptt" class="ptt" disabled aria-describedby="ptt-help">
+            <span class="ptt-fill" aria-hidden="true"></span>
+            <span class="ptt-budget" id="ptt-budget" aria-hidden="true"></span>
+            <strong id="ptt-label">Hold to talk</strong>
+            <span id="ptt-detail">Connect your Flipper first</span>
+          </button>
+          <canvas id="ptt-scope" aria-hidden="true"></canvas>
           <div
-            class="meter"
+            class="visually-hidden"
             role="meter"
             aria-label="Microphone level"
             aria-valuemin="0"
@@ -125,21 +188,10 @@
           >
             <span></span>
           </div>
-          <button id="ptt" class="ptt" disabled aria-describedby="ptt-help">
-            <svg viewBox="0 0 32 32" aria-hidden="true">
-              <rect x="12" y="3" width="8" height="16" rx="4" />
-              <path d="M7 15v2a9 9 0 0 0 18 0v-2M16 26v4m-5 0h10" />
-            </svg>
-            <strong id="ptt-label">Hold to talk</strong>
-            <span id="ptt-detail">Channel 9</span>
-          </button>
-          <p class="fine centered" id="ptt-help">
-            Release to listen again.<span class="keyboard-only"> The space bar works too.</span>
-          </p>
-        </section>
-      </div>
+        </div>
+      </section>
 
-      <section class="panel" aria-labelledby="recordings-title">
+      <section class="recordings" aria-labelledby="recordings-title">
         <div class="section-row">
           <h2 id="recordings-title">Recordings</h2>
           <label class="record-toggle">
@@ -152,16 +204,18 @@
           Saves each transmission that passes squelch as a WAV in this browser only. Download
           anything you want to keep.
         </p>
-        <p class="empty" id="recordings-empty">No recordings yet.</p>
+        <p class="empty" id="recordings-empty">
+          No recordings yet. Turn on Auto-record to catch the next transmission.
+        </p>
         <div class="recording-summary" id="recording-summary" hidden>
           <span id="recording-count">0 saved · 0.0 MB</span>
           <span id="playing-label">Choose a recording to play.</span>
         </div>
-        <audio id="recording-player" controls preload="none" aria-label="Recording playback" hidden></audio>
+        <audio id="recording-player" preload="none" hidden></audio>
         <ul id="recordings-list" aria-label="Saved transmissions"></ul>
       </section>
 
-      <section class="panel" aria-labelledby="message-title">
+      <section class="repeat" aria-labelledby="message-title">
         <div class="section-row">
           <h2 id="message-title">Repeat a message</h2>
           <button id="record-message" class="secondary compact">Record message</button>
@@ -170,7 +224,7 @@
           Record once, preview it, then send it on repeat.
         </p>
         <div class="repeat-body" id="repeat-body" hidden>
-          <audio id="message-preview" controls preload="none" aria-label="Preview your message"></audio>
+          <audio id="message-preview" preload="none"></audio>
           <div class="repeat-settings">
             <label>
               Repeat for
@@ -244,6 +298,14 @@
             Select the same channel and turn privacy codes off (code 0). Reception uses the
             Flipper’s experimental receiver, so some noise is normal.
           </p>
+          <h3>Reading the display</h3>
+          <p>
+            Each line in the field is a slice of audio from low to high pitch, with the newest at
+            the front. Speech makes ridges and static stays low. The lanes below show the same
+            audio as waveforms, and the Air strip logs each transmission. An underlined block has a
+            recording: select it to play. Everything is drawn from the audio itself, so it shows
+            noise too.
+          </p>
           <h3>Squelch and recording</h3>
           <p>
             Squelch filters by the signal strength the Flipper reports, so strong interference can
@@ -271,6 +333,6 @@
         <a href="https://github.com/kriss0011/flippie-talkie">Source code</a>
       </footer>
     </main>
-    <script type="module" src="app.js?v=0.9"></script>
+    <script type="module" src="app.js?v=0.10.1"></script>
   </body>
 </html>

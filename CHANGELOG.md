@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+**Web app redesign**
+- New look: matte black, white ink and three coded colours, set in Archivo. Vermilion is reserved for transmitting.
+- On the air: a live spectrogram drawn as a stacked pulse field, with waveforms for received audio and your microphone.
+- Air timeline: three minutes of transmissions, each linked to its recording.
+- The signal meter is now the squelch control, so you set the marker against the live signal.
+- The talk button now has a permanent place: a fixed dock at the screen edge, in the corner on desks and under the thumb on phones. It keeps the same position and size in every state, and `tools/web_talk_button_check.mjs` checks that.
+- The talk button shows your voice as a live trace, the real half-second channel opening, and what's left of the 60-second limit. When connected without a microphone, one tap enables it.
+- Square audio controls replace the browser's built-in player.
+
+No change to the radio, audio or wire protocol. The microphone display reads a separate branch of the audio, away from what gets transmitted.
+
 ## 0.10 – 2026-11-06
 
 **Flipper app**

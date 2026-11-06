@@ -13,3 +13,6 @@ __pycache__/
 *.p12
 *.pfx
 /releases/Flippie-Talkie-v0.[0-8].zip
+/.impeccable/mocks/
+/.impeccable/review/
+/.impeccable/questions/

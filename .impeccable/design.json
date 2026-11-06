@@ -1,0 +1,14 @@
+{
+  "name": "Flippie Talkie",
+  "motion": {
+    "easeOut": "cubic-bezier(0.16, 1, 0.3, 1)",
+    "signalMeter": "350ms ease-out",
+    "openingFill": "500ms linear, matches the radio lead-in",
+    "lampTest": "700ms on connect, skipped under reduced motion"
+  },
+  "focus": {
+    "outline": "2px solid #ffffff",
+    "offset": "2px"
+  },
+  "reducedMotion": "Pulse field updates at 2 Hz without scrolling; lamp test, channel tick and voice trace are off"
+}

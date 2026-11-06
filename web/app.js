@@ -3,9 +3,15 @@ import {BluetoothLink, USBLink} from './transports.js';
 import {ReceiveSession, DEFAULT_SQUELCH} from './receiver.js';
 import {recordingLibrary} from './recordings-ui.js';
 import {messagePanel} from './messages.js';
-import {TX_LEAD_IN_MS, waitForTxIdle} from './tx-timing.js';
+import {TX_LEAD_IN_MS, TX_LIMIT_MS, talkClock, waitForTxIdle} from './tx-timing.js';
+import {AirHistory} from './air-history.js';
+import {airDisplay, drawScope} from './pulse-field.js';
+import {audioBar} from './audio-bar.js';
 const $ = id => document.getElementById(id),
   sleep = ms => new Promise(r => setTimeout(r, ms));
+let txStartedAt = 0,
+  wasTalking = false,
+  micScope = null;
 let link,
   ready = false,
   connecting = false,
@@ -50,9 +56,37 @@ const receiver = new ReceiveSession({
     rxSequence = null;
   },
   onEnd: () => speaker?.port.postMessage({type: 'end'}),
-  onRecording: clip => library.save(clip),
+  onRecording: async clip => {
+    const id = await library.save(clip);
+    air.link(id, clip.startedAt, clip.duration);
+  },
 });
+const air = new AirHistory();
+audioBar($('recording-player'), 'Recording');
+audioBar($('message-preview'), 'Message preview');
 const library = recordingLibrary(enabled => receiver.setRecording(enabled));
+const calm = matchMedia('(prefers-reduced-motion: reduce)');
+const dbm = value => `${String(value).replace('-', '−')} dBm`;
+const scalePercent = dbm => `${Math.max(0, Math.min(100, ((dbm + 111) / 71) * 100))}%`;
+// The radio's lamp test: a one-off sweep of the meter that says the link is alive.
+function lampTest() {
+  if (calm.matches) return;
+  $('signal-bars').animate(
+    [{'--level': '0%'}, {'--level': '100%', offset: 0.4}, {'--level': '0%'}],
+    {duration: 700, easing: 'ease-out'},
+  );
+}
+function tickChannel(from, to) {
+  if (calm.matches || !from) return;
+  const step = (to - from + 16) % 16 < 8 ? 10 : -10;
+  $('channel').animate(
+    [
+      {transform: `translateY(${step}px)`, opacity: 0.3},
+      {transform: 'none', opacity: 1},
+    ],
+    {duration: 200, easing: 'cubic-bezier(0.16, 1, 0.3, 1)'},
+  );
+}
 function loadSquelch(channel) {
   const saved = channelSquelch[channel],
     value =
@@ -62,9 +96,10 @@ function loadSquelch(channel) {
           ? saved
           : DEFAULT_SQUELCH;
   $('squelch').value = value === null ? -111 : value;
+  $('signal-scale').style.setProperty('--gate', scalePercent(Number($('squelch').value)));
   receiver.setThreshold(value);
-  $('squelch-value').textContent = value === null ? 'Off' : `${value} dBm`;
-  $('squelch').setAttribute('aria-valuetext', value === null ? 'Off' : `${value} dBm`);
+  $('squelch-value').textContent = value === null ? 'Off' : dbm(value);
+  $('squelch').setAttribute('aria-valuetext', value === null ? 'Off' : dbm(value));
 }
 $('squelch').oninput = () => {
   const value = Number($('squelch').value),
@@ -77,20 +112,23 @@ $('squelch').oninput = () => {
   render();
 };
 loadSquelch(9);
+airDisplay(air, {
+  pulse: $('pulse'),
+  received: $('wave-rx'),
+  microphone: $('wave-mic'),
+  strip: $('air-strip'),
+  onPlay: id => library.play(id),
+});
 const messages = messagePanel({
   capture: async callback => {
     await enableMic();
     draftCapture = callback;
     micNode.port.postMessage(true);
-    $('mic-help').textContent = 'Recording locally. Your message is not being transmitted.';
     render();
   },
   endCapture: () => {
     draftCapture = null;
     micNode?.port.postMessage(false);
-    $('mic-help').textContent = micReady
-      ? 'Ready. Audio is sent only while you hold to talk.'
-      : 'Enable your microphone before talking.';
     render();
   },
   send: transmitRecorded,
@@ -105,6 +143,7 @@ setInterval(() => {
     txReadyAt = 0;
     render();
   }
+  if (held && txStartedAt) showTalkDetail();
   const was = receiver.audible;
   receiver.tick();
   library.update(receiver.clip);
@@ -133,12 +172,25 @@ function clearPlayback(reason = 'Reception stopped') {
   receiver.reset(reason);
   rxSequence = null;
 }
+function showTalkDetail() {
+  const channel = status?.channel || Number($('channel').value);
+  const talking = held && txStartedAt,
+    elapsed = talking ? performance.now() - txStartedAt : 0;
+  $('ptt-budget').style.setProperty('--left', talking ? 1 - elapsed / TX_LIMIT_MS : 0);
+  $('ptt-detail').textContent = !ready
+    ? 'Connect your Flipper first'
+    : !micReady
+      ? 'Then hold to talk'
+      : talking
+        ? `Channel ${channel} · ${talkClock(elapsed)}`
+        : `Channel ${channel}`;
+}
 function render() {
   document.body.classList.toggle('connected', ready);
   const channel = status?.channel || Number($('channel').value),
     live = ready && status;
   $('frequency').textContent = ((446006250 + (channel - 1) * 12500) / 1e6).toFixed(5) + ' MHz';
-  $('ptt-detail').textContent = 'Channel ' + channel;
+  showTalkDetail();
   $('connection').textContent = connecting ? 'Connecting…' : ready ? 'Connected' : 'Not connected';
   $('device').textContent = ready ? link?.device?.name || 'USB' : '';
   $('connect').disabled = messageBusy;
@@ -152,28 +204,59 @@ function render() {
   $('listen').querySelector('span').textContent =
     live && status.listening ? 'Pause listening' : 'Start listening';
   $('mic').disabled = held || messageBusy || !!draftCapture;
-  $('mic').textContent = micReady ? 'Turn off microphone' : 'Enable microphone';
+  // One line says what the microphone is doing now, so it can never contradict the radio.
+  $('mic-help').textContent =
+    messageBusy && held
+      ? 'Sending your recorded message.'
+      : held
+        ? 'You’re on the air. Release to stop.'
+        : drainingEpoch !== null
+          ? 'Finishing your message.'
+          : draftCapture
+            ? 'Recording locally. Your message is not being transmitted.'
+            : micReady
+              ? 'Ready. Audio is sent only while you hold to talk.'
+              : 'Enable your microphone before talking.';
+  $('mic-label').textContent = micReady ? 'Turn off microphone' : 'Enable microphone';
+  $('mic').classList.toggle('on', micReady);
+  $('mic').setAttribute('aria-pressed', String(micReady));
+  // Without a microphone the talk button enables it; it never transmits from that tap.
   $('ptt').disabled =
-    !ready || !micReady || messageBusy || !!draftCapture || (!held && status?.state >= 3);
+    !ready || messageBusy || !!draftCapture || (micReady && !held && status?.state >= 3);
+  const talking = held && transmitting && !txReadyAt && status?.state === 4;
   $('ptt').classList.toggle('active', held);
+  $('ptt').classList.toggle('opening', held && !!txReadyAt);
+  $('ptt').classList.toggle('talking', talking);
+  // A tick in the hand says the channel is open without looking at the screen.
+  if (talking && !wasTalking && !messageBusy) navigator.vibrate?.(20);
+  wasTalking = talking;
   $('ptt-label').textContent = held
-    ? transmitting && !txReadyAt && status?.state === 4
+    ? talking
       ? 'Talking…'
       : 'Opening channel…'
     : drainingEpoch !== null
       ? 'Finishing message…'
-      : 'Hold to talk';
+      : ready && !micReady
+        ? 'Enable microphone'
+        : 'Hold to talk';
   const names = ['Paused', 'Listening', 'Receiving', 'Opening channel…', 'Transmitting'];
   $('radio-state').textContent = live
     ? status.state === 2 && !receiver.audible
       ? 'Signal below squelch'
       : names[status.state] || 'Connected'
     : 'Connect to use your radio';
-  $('state-dot').classList.toggle(
-    'live',
-    !!live && ((status.state === 2 && receiver.audible) || status.state >= 3),
-  );
-  $('signal').textContent = live && status.rssi > -127 ? `${status.rssi} dBm` : 'No signal reading';
+  const onAir = !!live && ((status.state === 2 && receiver.audible) || status.state >= 3);
+  $('state-dot').classList.toggle('live', onAir);
+  document.body.classList.toggle('sending', !!live && status.state >= 3);
+  const [linked, listening, receiving, sending] = $('state-strip').children;
+  linked.classList.toggle('on', ready);
+  listening.classList.toggle('on', !!live && !!status.listening);
+  receiving.classList.toggle('on', !!live && status.state === 2 && receiver.audible);
+  sending.classList.toggle('on', !!live && status.state >= 3);
+  $('channel-box').classList.toggle('live', onAir);
+  const reading = live && status.rssi > -127;
+  $('signal').textContent = reading ? dbm(status.rssi) : 'No reading';
+  $('signal-scale').style.setProperty('--level', reading ? scalePercent(status.rssi) : '0%');
   messages?.setConnected(ready, held);
   $('diagnostics').textContent = live
     ? `${(status.rxRate || RX_RATE) / 1000} kHz receive / ${RATE / 1000} kHz talk · Received ${received} blocks · Lost ${lost} · Device drops ${status.dropped} · Playback gaps ${playback.underruns || 0} · Buffer ${playback.bufferedMs || 0} ms · Microphone gaps ${status.underruns}`
@@ -234,11 +317,15 @@ function receive(packet) {
     lastStatus = performance.now();
     if (!ready) {
       ready = true;
+      lampTest();
       connecting = false;
       notice();
     }
     $('channel').value = String(status.channel);
-    if (previousChannel !== status.channel) loadSquelch(status.channel);
+    if (previousChannel !== status.channel) {
+      loadSquelch(status.channel);
+      tickChannel(previousChannel, status.channel);
+    }
     if (status.error) notice(errors[status.error] || `Radio status ${status.error}`);
     else if (previousError) notice();
     speaker?.port.postMessage({type: 'rate', rate: status.rxRate});
@@ -247,6 +334,8 @@ function receive(packet) {
     if (status.state === 2 && previousState !== 2) speaker?.port.postMessage({type: 'begin'});
     if (status.epoch === epoch && status.state === 4 && previousState !== 4)
       txReadyAt = performance.now() + TX_LEAD_IN_MS;
+    if (status.state !== 4) txStartedAt = 0;
+    else if (previousState !== 4) txStartedAt = performance.now();
     if (status.epoch === epoch && status.state < 3) {
       drainingEpoch = null;
       txReadyAt = 0;
@@ -272,6 +361,7 @@ function receive(packet) {
     }
     rxSequence = packet.sequence;
     received++;
+    air.push('rx', pcm, status.rxRate || RX_RATE, Date.now(), {gated: !receiver.audible});
     receiver.push(pcm, packet.sequence);
   } catch (e) {
     notice(e.message);
@@ -398,18 +488,22 @@ $('listen').onclick = async () => {
     notice(e.message);
   }
 };
+const showVolume = () => $('volume').style.setProperty('--fill', $('volume').value + '%');
+showVolume();
 $('volume').oninput = () => {
+  showVolume();
   const x = Number($('volume').value);
   $('volume-value').textContent = x + '%';
   if (output) output.gain.value = x / 100;
 };
 function releaseMic() {
+  micScope = null;
+  drawScope($('ptt-scope'), null);
   micNode?.disconnect();
   micNode = null;
   micStream?.getTracks().forEach(t => t.stop());
   micStream = null;
   micReady = false;
-  $('mic-help').textContent = 'Enable your microphone before talking.';
   setMeter(0);
 }
 function setMeter(x) {
@@ -417,6 +511,24 @@ function setMeter(x) {
   $('meter').setAttribute('aria-valuenow', n);
   $('meter').firstElementChild.style.width = n + '%';
 }
+// Reads the microphone for display only. Speech reaches the radio through the worklet.
+const SCOPE_RATE = 6000;
+function watchMic() {
+  if (!micScope || messageBusy) return;
+  const samples = new Float32Array(micScope.fftSize);
+  micScope.getFloatTimeDomainData(samples);
+  const stride = Math.round(ctx.sampleRate / SCOPE_RATE),
+    wanted = Math.round(SCOPE_RATE * 0.05),
+    pcm = new Int16Array(wanted),
+    start = samples.length - wanted * stride;
+  for (let i = 0; i < wanted; i++) {
+    pcm[i] = Math.max(-1, Math.min(1, samples[Math.max(0, start + i * stride)])) * 32767;
+  }
+  if (!calm.matches) drawScope($('ptt-scope'), samples);
+  const onAir = held && transmitting;
+  air.push('mic', pcm, SCOPE_RATE, Date.now(), {kind: onAir ? 'tx' : 'mic', log: onAir});
+}
+setInterval(watchMic, 50);
 let micSetup;
 async function enableMic() {
   if (micReady) return;
@@ -453,6 +565,9 @@ async function buildMic() {
     lp.type = 'lowpass';
     lp.frequency.value = 2400;
     micNode = new AudioWorkletNode(ctx, 'radio-mic');
+    micScope = ctx.createAnalyser();
+    micScope.fftSize = 2048;
+    lp.connect(micScope);
     const silent = ctx.createGain();
     silent.gain.value = 0;
     source.connect(hp).connect(lp).connect(micNode).connect(silent).connect(ctx.destination);
@@ -485,7 +600,6 @@ async function buildMic() {
         });
     };
     micReady = true;
-    $('mic-help').textContent = 'Ready. Audio is sent only while you hold to talk.';
     notice();
     render();
   } catch (e) {
@@ -589,6 +703,7 @@ async function transmitRecorded(pcm, signal) {
       const block = new Int16Array(SAMPLES);
       block.set(pcm.subarray(offset, offset + SAMPLES));
       await send(5, encode(block, encoder), thisEpoch);
+      air.push('mic', block, RATE, Date.now(), {kind: 'tx'});
       n++;
       const delay = start + ((n * SAMPLES) / RATE) * 1000 - performance.now();
       if (delay < -250)
@@ -602,6 +717,14 @@ async function transmitRecorded(pcm, signal) {
     if (held || drainingEpoch !== null) stopTalk(false);
   }
 }
+$('ptt').onclick = async () => {
+  if (micReady || !ready) return;
+  try {
+    await enableMic();
+  } catch (e) {
+    notice(micError(e));
+  }
+};
 $('ptt').onpointerdown = e => {
   if (e.button !== 0) return;
   e.preventDefault();

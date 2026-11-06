@@ -3,6 +3,7 @@ const $ = id => document.getElementById(id);
 const duration = seconds =>
   `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 export function recordingLibrary(onToggle) {
+  const players = new Map();
   const store = new RecordingStore(),
     rows = new Map(),
     clips = new Map(),
@@ -50,6 +51,7 @@ export function recordingLibrary(onToggle) {
     const play = document.createElement('button');
     play.textContent = 'Play';
     play.className = 'secondary';
+    players.set(clip.id, () => play.click());
     play.onclick = async () => {
       try {
         const source = await blob(clip);
@@ -130,6 +132,9 @@ export function recordingLibrary(onToggle) {
     onToggle(enabled);
     message = enabled ? 'Waiting for a transmission…' : 'Auto-record is off.';
     status();
+    $('recordings-empty').textContent = enabled
+      ? 'No recordings yet. The next transmission will land here.'
+      : 'No recordings yet. Turn on Auto-record to catch the next transmission.';
     if (enabled) navigator.storage?.persist?.().catch(() => {});
   };
   const loaded = store
@@ -145,7 +150,11 @@ export function recordingLibrary(onToggle) {
     });
   return {
     loaded,
+    play(id) {
+      players.get(id)?.();
+    },
     update(active) {
+      $('recording-status').classList.toggle('live', !!active);
       if (active)
         $('recording-status').textContent =
           `Recording channel ${active.channel} · ${duration(active.samples / active.rate)}`;
@@ -168,9 +177,11 @@ export function recordingLibrary(onToggle) {
       } finally {
         const {blob: _, ...metadata} = clip;
         add(metadata);
+        rows.get(clip.id)?.classList.add('new');
         saving--;
         status();
       }
+      return clip.id;
     },
   };
 }

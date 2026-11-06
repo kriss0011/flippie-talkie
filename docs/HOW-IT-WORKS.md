@@ -37,6 +37,8 @@ Audio travels as 164-byte IMA ADPCM blocks of 321 samples, which fit the measure
 
 Everything stays local. The web app is static files, and there's no server, account or upload. Recordings live in the browser's IndexedDB and squelch settings in local storage.
 
+**The display** is drawn from that same audio, so it shows noise as faithfully as speech. `web/air-history.js` slices received and microphone audio into 50 ms columns and runs a 256-point FFT on each, on one 0–2.4 kHz axis, so the different sample rates line up. Frequencies above a link's limit stay empty: Bluetooth tops out at 1.6 kHz. `web/pulse-field.js` draws the columns as a stacked pulse field, waveform lanes and the air timeline. The microphone view reads a separate analyser branch, so the display can't affect what gets transmitted.
+
 **Squelch** runs in the browser and works from the RSSI the Flipper reports, with 4 dB of hysteresis and a 450 ms hold. It decides what you hear and what gets recorded, but it can't tell strong interference from a wanted signal.
 
 ## Transmit safeguards
@@ -64,6 +66,7 @@ Every transmission has to pass these checks:
 | `firmware/flippie_talkie/pmr_ui.h` | Shared 128 × 64 screen layout |
 | `firmware/flippie_talkie/pmr_radio_core.h` | Channel plan and transmit timing |
 | `web/app.js` | Connection, radio state and push-to-talk |
+| `web/air-history.js`, `web/pulse-field.js` | Audio analysis and the live display |
 | `web/receiver.js`, `web/playback-buffer.js` | Squelch, recording and playback buffering |
 | `web/transports.js`, `web/codec.js` | Bluetooth, USB, framing and ADPCM |
 | `web/messages.js`, `web/broadcast.js` | Recorded messages and repeats |

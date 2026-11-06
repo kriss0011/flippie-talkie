@@ -1,4 +1,13 @@
 export const TX_LEAD_IN_MS = 500;
+// The Flipper ends any transmission after this long.
+export const TX_LIMIT_MS = 60000;
+// Counts up while talking, then down over the final ten seconds.
+export function talkClock(elapsedMs) {
+  const left = Math.ceil((TX_LIMIT_MS - elapsedMs) / 1000);
+  if (left <= 10) return `${Math.max(left, 0)} s left`;
+  const seconds = Math.floor(elapsedMs / 1000);
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+}
 // Stop is acknowledged by the radio after its queued speech and lead-in drain.
 export async function waitForTxIdle({
   epoch,
