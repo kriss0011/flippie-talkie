@@ -11,7 +11,10 @@ int main(void) {
     assert(pmr_preferences_decode(legacy,8,&result));assert(result.channel==9 && result.volume==8 && result.record==1 && result.transport==0);
     for(unsigned i=0;i<4;i++) {
         original=(PmrPreferences){9,8,1,0};
-        if(i==0)original.channel=0;if(i==1)original.volume=9;if(i==2)original.record=2;if(i==3)original.transport=2;
+        if(i==0)original.channel=0;
+        if(i==1)original.volume=9;
+        if(i==2)original.record=2;
+        if(i==3)original.transport=2;
         pmr_preferences_encode(&original,data);assert(!pmr_preferences_decode(data,9,&result));
     }
     original=(PmrPreferences){17,8,1,0};pmr_preferences_encode(&original,data);assert(!pmr_preferences_decode(data,9,&result));

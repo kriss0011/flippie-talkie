@@ -105,7 +105,7 @@
     "sd/apps_data/pmr_radio/voice/ch16.pdm": "74e7199150de8202fa932c5cd32c2eb3191e9bb87c4b7de00dde9f9732e2b78f",
     "tests/audio.test.js": "557ae86d1f19f3043f262bdcd74deb7ce55b8c7e0e4e5df13e729800f431bf0e",
     "tests/broadcast.test.js": "56d87ab98d09344e112c35f5ff90f9997b084cf0663852b6e34487677e078a77",
-    "tests/codec.test.js": "51bd141dce7c5c2f9b1c3b399b5a879124c4e515d3407182cca4c1610f6089d9",
+    "tests/codec.test.js": "02a524b68aef495aba9ff6ffa25dc4aaf124049b211b27e66f55c7e6c0d37e9f",
     "tests/codec_bridge.c": "f033696ebcb6aaf79ddbc6dff8e392eb9e3418b089374e3b5c77c68d38267d37",
     "tests/playback.test.js": "f6f0515aedba46630472086c64a72b74ad39c5b408ab937e06774c128b77d447",
     "tests/radio.test.js": "845b0eb4ee3e4706a32490f9bf8de8bffdd9fda79cb3d25c9b17eb781bd1bc21",
@@ -115,7 +115,7 @@
     "tests/test_pmr_speak.c": "877be631398f3067c803e2f20559c16763cc1fd72a09b8ac488d247890ada2b9",
     "tests/test_pmr_tts.c": "9e4990a205fc5e5c9a1918bac614e594133e663b70f632dc4b8773626f90c2b3",
     "tests/test_pmr_tx_tone.c": "710ae0c09e6f86bbe8862bee5fdd0dfcb2dcd58cd85268e9ea13cf7cc034a923",
-    "tests/test_preferences.c": "ca28644d31bdb6108c6e6c93d41f85768b8d5bce26da27adfb76b8edb6f514d1",
+    "tests/test_preferences.c": "131bcda4aab592c89021aa85e433c811dfe5a78d1bed702ea60bd1cb6d2852cf",
     "tests/test_rx_gate.c": "48d2e5f0e9c23cc7c5895f9ce2668b1646959281a1e3b24c35a67d358a782d22",
     "tests/tx-drain.test.js": "761ea001f48c553dc439422c8ef2fdd3651cc98f6b07957b8d076101596e61be",
     "tests/tx-timing.test.js": "2dbd56057aff7f83389cead41c88936b2c9c1a3813de2b51f749337d2280bd4d",
@@ -205,6 +205,6 @@
     "web/style.css": "f41551dc0bfeb21d7429528028c8f6493180ded09435b48858fcaac2fd3d76e7",
     "web/transports.js": "d866b9ae550325ec848f5b84e7083151fca66cb9c2ea98ae84db55c016513965",
     "web/tx-timing.js": "9427e1dd3b8d8fc869143283b6ce00e009bb5b1a98278a20f6f934ec3847596d",
-    "releases/Flippie-Talkie-v0.10.zip": "49196f0080945739e752a19c528bcb02e56200fde31be6691765faf6ad513a4c"
+    "releases/Flippie-Talkie-v0.10.zip": "d43a4d5cd4ee68790cdd344e0bbb41b543cba361550f4329e2708d5f2f5294c6"
   }
 }
