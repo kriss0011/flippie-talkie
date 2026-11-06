@@ -4,6 +4,8 @@
 
 https://github.com/user-attachments/assets/f5c2c351-062a-498e-87a4-9aacaae06265
 
+Turn the sound on to hear the radio audio. GitHub starts videos muted.
+
 | On the Flipper | In the browser |
 | --- | --- |
 | ![Listening on channel 9 on the Flipper](docs/images/flipper-listen.png) | ![Web app on a phone while talking](docs/images/web-phone-talking.png) |

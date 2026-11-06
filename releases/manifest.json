@@ -10,7 +10,7 @@
   "sha256": {
     "CHANGELOG.md": "ac7c2372222cae8d3c80806aaf56dd39dc766908cb0eaeb13f73c63ec9202206",
     "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
-    "README.md": "4953ec12f3893486046bcb0888badc1eb8af957ce08efa806ba1b4e6b8c00f97",
+    "README.md": "3f0e8178ad010c45d93d7d2d0c5b652ba2bae8b93f1fc9c76c7f3af59d1aaab2",
     "THIRD_PARTY_NOTICES.md": "7d8c7fff3b9373eac234e2cca4c3d34cfee6b0a83249cbfcc90b1e0c70cd9d69",
     "assets/voice-manifest.json": "988bd3c80d202799daa0067bb42defa27e496cacf43da404cb08062f706d07e3",
     "assets/voice-preview/channel-01.wav": "c663635f08e9c1fde2b969224220a4a5312fe1bb44c30b366fb9ea738ebb3278",
@@ -215,6 +215,6 @@
     "web/style.css": "99f77bc3448a9081e6a33def94c668518947066c83d77a875929cda9af772cb3",
     "web/transports.js": "d866b9ae550325ec848f5b84e7083151fca66cb9c2ea98ae84db55c016513965",
     "web/tx-timing.js": "f470405d7d1e655319d3138d0aeb02f1f872141c0a98bdff318498561cea8ca1",
-    "releases/Flippie-Talkie-v0.10.zip": "cb55ab7e9b173ebf42f0da833945bbf06d8697ef1d8c6d2fc9b2e3f94b20e88d"
+    "releases/Flippie-Talkie-v0.10.zip": "62b8ef184fd20090d8cbb114bb0db79f90f53ab45fc0a26e6dff6dacd760f416"
   }
 }
