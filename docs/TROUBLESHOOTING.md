@@ -45,7 +45,7 @@ The Flipper can hear a signal on the channel, so it won't transmit. Wait, or pic
 
 ## “TX blocked”
 
-The firmware doesn't allow transmitting on this frequency. This project doesn't bypass that restriction.
+The firmware's region check is stopping the transmission, which is the default for 446 MHz. See [Allow transmitting on PMR446](../README.md#allow-transmitting-on-pmr446), including the legal caution. Listening isn't affected.
 
 ## The voice test doesn't work
 

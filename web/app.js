@@ -151,7 +151,7 @@ setInterval(() => {
 }, 100);
 const errors = {
   1: 'This channel is busy. Wait for the other radio to finish.',
-  2: 'This Flipper’s firmware blocks transmitting on this channel.',
+  2: 'This Flipper’s firmware blocks transmitting on this channel. See “Allow transmitting on PMR446” in the README.',
   3: 'Finish talking before changing channel.',
   4: 'The radio could not start. Disconnect, reconnect and try again.',
   5: 'The audio link timed out. Hold to talk again, or reconnect if it keeps happening.',

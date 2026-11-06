@@ -39,6 +39,29 @@ This installs an app. It doesn't flash firmware.
 
 The same files are bundled in [`releases/Flippie-Talkie-v0.10.zip`](releases/Flippie-Talkie-v0.10.zip), with checksums in [`releases/SHA256SUMS`](releases/SHA256SUMS). Settings and recordings from earlier versions carry over.
 
+## Allow transmitting on PMR446
+
+Listening works straight after installing. **Transmitting doesn't.** The firmware only allows transmitting on frequencies approved for the region set on your Flipper, and 446 MHz isn't one of them. Until you change this, talking, Speak text and the test transmissions all stop with “TX blocked”.
+
+> [!CAUTION]
+> This turns off the check that keeps your Flipper to your region's frequencies, for the whole device and not just this app. Read [Radio rules](#radio-rules) first, and only do this if transmitting is legal where you are.
+
+On the Flipper:
+
+1. Open **CFW Settings**, then **Protocols**.
+2. Set **SubGHz Bypass Region Lock** to on, and select **Yes** to confirm.
+3. Press Back to leave CFW Settings. The Flipper restarts to apply the change.
+
+Or edit `subghz/assets/extend_range.txt` on the SD card, set this line, then restart the Flipper:
+
+```text
+ignore_default_tx_region: true
+```
+
+Leave **SubGHz Extend Freq Bands** (`use_ext_range_at_own_risk`) off. PMR446 doesn't need it, and the firmware warns that it can damage the Flipper.
+
+These steps are for the RogueMaster firmware this app is built for. To undo them, turn the setting off the same way.
+
 ## Use it on the Flipper
 
 | Home | Settings |
@@ -105,7 +128,7 @@ On the Flipper, Up and Down change channel, OK pauses or resumes listening and B
 PMR446 is a shared band for short-range voice, licence-free in the EU, the UK and some other countries for approved handheld radios with fixed antennas. Rules differ by country, and the band isn't available everywhere.
 
 - A Flipper Zero has no PMR446 approval. Transmitting with it can break the rules even on a PMR446 frequency.
-- This project includes no region unlock. If your firmware blocks a frequency, the app shows “TX blocked” and doesn't transmit.
+- This project doesn't patch the firmware. Transmitting relies on the firmware's own region setting, described in [Allow transmitting on PMR446](#allow-transmitting-on-pmr446). If it stays on, the app shows “TX blocked” and doesn't transmit.
 - Keep transmissions short and leave channels free for other people, especially with repeated messages.
 - Laws on recording or sharing other people's radio traffic vary. Listening may be restricted too.
 

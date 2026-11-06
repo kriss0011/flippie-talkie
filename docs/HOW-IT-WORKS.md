@@ -47,7 +47,7 @@ Every transmission has to pass these checks:
 
 | Safeguard | Behaviour |
 | --- | --- |
-| Firmware frequency check | No transmission if the firmware doesn't allow the frequency |
+| Firmware frequency check | No transmission if the firmware doesn't allow the frequency. 446 MHz is blocked by default; see [Allow transmitting on PMR446](../README.md#allow-transmitting-on-pmr446) |
 | Busy check | No transmission while the channel is occupied |
 | Push-to-talk only | The browser sends audio only while talk is held or a repeat is running |
 | Missing audio | Stops after about 400 ms without audio |

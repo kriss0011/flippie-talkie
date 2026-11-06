@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+**Documentation**
+- The README now explains how to allow transmitting, which the firmware blocks on 446 MHz by default.
+
 **Web app redesign**
 - New look: matte black, white ink and three coded colours, set in Archivo. Vermilion is reserved for transmitting.
 - On the air: a live spectrogram drawn as a stacked pulse field, with waveforms for received audio and your microphone.
