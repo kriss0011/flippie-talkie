@@ -13,6 +13,7 @@
 
 - **All 16 PMR446 channels**, 446.00625–446.19375 MHz, with a live signal meter.
 - **Listen on Flipper:** built-in speaker and automatic WAV recording to the SD card. No computer needed.
+- **Speak text:** type a message on the Flipper and it reads it out on the channel, with repeats and a pause. No phone or computer needed. The voice is robotic.
 - **Browser link:** connect over Bluetooth or USB, then listen and hold to talk from a web page. Audio goes directly between your browser and the Flipper, with no server in between.
 - **Browser extras:** per-channel squelch, recordings saved in your browser, and a recorded message you can send on repeat.
 - **Channel tests:** spoken and tone transmissions to check another radio, plus a speaker test.
@@ -35,7 +36,7 @@ This installs an app. It doesn't flash firmware.
 3. Copy [`sd/apps_data/pmr_radio/voice/`](sd/apps_data/pmr_radio/voice/) to `apps_data/pmr_radio/voice/`. Keep all 16 `.pdm` files, because the voice test needs them.
 4. Open **Apps → Sub-GHz → Flippie Talkie**.
 
-The same files are bundled in [`releases/Flippie-Talkie-v0.9.zip`](releases/Flippie-Talkie-v0.9.zip), with checksums in [`releases/SHA256SUMS`](releases/SHA256SUMS). Settings and recordings from earlier versions carry over.
+The same files are bundled in [`releases/Flippie-Talkie-v0.10.zip`](releases/Flippie-Talkie-v0.10.zip), with checksums in [`releases/SHA256SUMS`](releases/SHA256SUMS). Settings and recordings from earlier versions carry over.
 
 ## Use it on the Flipper
 
@@ -127,6 +128,7 @@ The tests need Node.js 20+, a C compiler, FFmpeg and Python 3. There are no npm 
 - [Wire protocol](docs/PROTOCOL.md): Bluetooth and USB framing, for building other clients
 - [Build and development](docs/BUILD.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Speak text](docs/SPEAK-TEXT.md)
 - [Changelog](CHANGELOG.md) and [project history](docs/history/README.md)
 
 ```text

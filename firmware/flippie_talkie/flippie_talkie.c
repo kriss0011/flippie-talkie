@@ -3,6 +3,9 @@
 #include <input/input.h>
 #include "pmr_ui.h"
 #include "pmr_preferences.h"
+#include "pmr_speak_plugin.h"
+#include <flipper_application/flipper_application.h>
+#include <loader/firmware_api/firmware_api.h>
 
 int32_t pmr_capture_app(void* args);
 int32_t pmr_connect_app(void* args);
@@ -13,8 +16,26 @@ typedef struct {
     Storage* storage;
     PmrPreferences prefs;
     uint32_t screen, selected;
-    bool save_error;
+    bool save_error, speak_error;
 } Shell;
+
+// Speech occupies RAM only while it runs. Recording in Listen allocates about
+// 85 KB when a signal arrives, which does not fit beside it.
+static bool speak_run(Shell* s) {
+    FlipperApplication* plugin = flipper_application_alloc(s->storage, firmware_api_interface);
+    bool ok = flipper_application_preload(plugin, PMR_SPEAK_PLUGIN_PATH) ==
+                  FlipperApplicationPreloadStatusSuccess &&
+              flipper_application_is_plugin(plugin) &&
+              flipper_application_map_to_memory(plugin) == FlipperApplicationLoadStatusSuccess;
+    if(ok) {
+        const FlipperAppPluginDescriptor* found = flipper_application_plugin_get_descriptor(plugin);
+        ok = found->ep_api_version == PMR_SPEAK_PLUGIN_API &&
+             !strcmp(found->appid, PMR_SPEAK_PLUGIN_ID);
+        if(ok) ((const PmrSpeakPlugin*)found->entry_point)->run(NULL);
+    }
+    flipper_application_free(plugin);
+    return ok;
+}
 
 static void shell_draw(Canvas* c, void* context) {
     Shell* s = context;
@@ -31,12 +52,16 @@ static void shell_draw(Canvas* c, void* context) {
     pmr_ui_header(
         c,
         s->screen ? "Settings" : "Flippie Talkie",
-        s->screen ? (s->save_error ? "SD error" : "PMR446") : "v" FLIPPIE_TALKIE_VERSION);
+        s->screen ? (s->save_error ? "SD error" : "PMR446") :
+                    (s->speak_error ? "Speech missing" : "v" FLIPPIE_TALKIE_VERSION));
     if(!s->screen) {
-        const char* labels[] = {"Listen on Flipper", "Browser link", "Settings", "Quick start"};
-        const char* values[] = {"", s->prefs.transport ? "USB" : "Bluetooth", "", ""};
+        const char* labels[] = {
+            "Listen on Flipper", "Speak text", "Browser link", "Settings", "Quick start"};
+        const char* values[] = {"", "", s->prefs.transport ? "USB" : "Bluetooth", "", ""};
+        uint32_t top = s->selected > 3 ? 1 : 0;
         for(uint32_t i = 0; i < 4; i++)
-            pmr_ui_row(c, i, s->selected == i, false, labels[i], values[i]);
+            pmr_ui_row(c, i, s->selected == top + i, true, labels[top + i], values[top + i]);
+        pmr_ui_scroll(c, s->selected, 5);
     } else {
         const char* labels[] = {"Channel", "Speaker", "Auto-record", "Connection"};
         for(uint32_t i = 0; i < 4; i++) {
@@ -82,12 +107,12 @@ int32_t flippie_talkie_app(void* args) {
         } else if(s->screen == 2) {
             if(e.key == InputKeyOk && short_press) {
                 s->screen = 0;
-                s->selected = 3;
+                s->selected = 4;
             }
         } else if(e.key == InputKeyUp)
-            s->selected = (s->selected + 3) % 4;
+            s->selected = (s->selected + (s->screen ? 3 : 4)) % (s->screen ? 4 : 5);
         else if(e.key == InputKeyDown)
-            s->selected = (s->selected + 1) % 4;
+            s->selected = (s->selected + 1) % (s->screen ? 4 : 5);
         else if(
             s->screen == 1 && (e.key == InputKeyLeft || e.key == InputKeyRight ||
                                (e.key == InputKeyOk && short_press))) {
@@ -102,18 +127,20 @@ int32_t flippie_talkie_app(void* args) {
                 s->prefs.transport = !s->prefs.transport;
             s->save_error = !pmr_preferences_save(s->storage, &s->prefs);
         } else if(!s->screen && e.key == InputKeyOk && short_press) {
-            if(s->selected < 2) {
+            if(s->selected < 3) {
                 // Each mode owns and releases the radio before returning to this menu.
                 view_port_enabled_set(s->view, false);
                 if(s->selected == 0)
                     pmr_capture_app(NULL);
+                else if(s->selected == 1)
+                    s->speak_error = !speak_run(s);
                 else
                     pmr_connect_app(NULL);
                 pmr_preferences_load(s->storage, &s->prefs);
                 furi_message_queue_reset(s->keys);
                 view_port_enabled_set(s->view, true);
             } else {
-                s->screen = s->selected == 2 ? 1 : 2;
+                s->screen = s->selected == 3 ? 1 : 2;
                 s->selected = 0;
             }
         }

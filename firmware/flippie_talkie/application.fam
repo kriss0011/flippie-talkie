@@ -6,8 +6,19 @@ App(
     stack_size=6144,
     fap_category="Sub-GHz",
     fap_icon="talkie_10px.png",
-    fap_version=(0, 9),
+    fap_version=(0, 10),
     fap_description="PMR radio: speaker, SD recording, Bluetooth/USB audio and push-to-talk",
     fap_author="Flippie Talkie",
     fap_weburl="https://github.com/kriss0011/flippie-talkie",
+    # Speech lives in the plugin below: Listen needs that RAM to start recording.
+    sources=["flippie_talkie.c", "pmr_capture.c", "pmr_connect.c"],
+)
+
+App(
+    appid="flippie_speak",
+    apptype=FlipperAppType.PLUGIN,
+    entry_point="flippie_speak_ep",
+    requires=["flippie_talkie"],
+    sources=["pmr_speak.c", "pmr_tts.c"],
+    fal_embedded=True,
 )

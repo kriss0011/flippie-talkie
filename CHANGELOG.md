@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10 – 2026-11-06
+
+**Flipper app**
+- New Speak text mode: type a message and the Flipper speaks it on the channel, with no phone or computer. Set repeats, pause, speed and pitch, or hear it on the Flipper first. The English voice is synthesized on the device and is robotic.
+- Each send checks that the channel is clear and uses the same lead-in and 60-second limit as push-to-talk.
+- Speech is a plugin inside the same FAP, loaded only while Speak text is open, so Listen keeps the memory it needs to record.
+
+The web app is unchanged apart from its version number. See [Speak text](docs/SPEAK-TEXT.md).
+
 ## 0.9 – 2026-11-06
 
 **Flipper app**

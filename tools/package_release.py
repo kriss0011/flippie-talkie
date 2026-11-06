@@ -5,11 +5,11 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '0.9'
+VERSION = '0.10'
 
 def package():
     files = [ROOT / name for name in ('LICENSE', 'README.md', 'CHANGELOG.md', 'THIRD_PARTY_NOTICES.md', 'package.json', 'requirements.txt')]
-    for folder in ('firmware', 'sd', 'web', 'docs', 'tools', 'tests', 'assets', 'validation/redesign-0.5', 'validation/roguemaster-0.6', 'validation/tx-timing-0.7', 'validation/tx-lead-in-0.8', 'validation/ui-0.9'):
+    for folder in ('firmware', 'sd', 'web', 'docs', 'tools', 'tests', 'assets', 'validation/redesign-0.5', 'validation/roguemaster-0.6', 'validation/tx-timing-0.7', 'validation/tx-lead-in-0.8', 'validation/ui-0.9', 'validation/speak-text'):
         files.extend(p for p in (ROOT / folder).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc')
     files = sorted(set(files))
     apps = list((ROOT / 'sd/apps').rglob('*.fap'))

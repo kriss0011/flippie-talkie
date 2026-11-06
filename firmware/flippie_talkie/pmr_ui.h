@@ -3,7 +3,7 @@
 #include <gui/elements.h>
 #include <stdio.h>
 
-#define FLIPPIE_TALKIE_VERSION "0.9"
+#define FLIPPIE_TALKIE_VERSION "0.10"
 
 // All geometry is native 128 x 64. No scaled fonts or simulated signal traces.
 static inline void pmr_ui_header(Canvas* c, const char* title, const char* badge) {

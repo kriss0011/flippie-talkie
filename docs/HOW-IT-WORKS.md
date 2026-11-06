@@ -58,6 +58,7 @@ Every transmission has to pass these checks:
 | File | Purpose |
 | --- | --- |
 | `firmware/flippie_talkie/flippie_talkie.c` | Home menu, settings, app entry point |
+| `firmware/flippie_talkie/pmr_speak.c`, `pmr_tts.c` | Speak text: a plugin with text-to-speech, the transmit loop and speaker preview. See [Speak text](SPEAK-TEXT.md). |
 | `firmware/flippie_talkie/pmr_capture.c` | Listen on Flipper: receive, speaker, SD recording, tests |
 | `firmware/flippie_talkie/pmr_connect.c` | Browser link: transports, streaming, push-to-talk |
 | `firmware/flippie_talkie/pmr_ui.h` | Shared 128 × 64 screen layout |
