@@ -1,0 +1,45 @@
+
+> flippie-talkie@0.6.0 test
+> node --test tests/*.test.js
+
+✔ Microphone resamples 44100 Hz continuously to 6000 Hz (48.546625ms)
+✔ Microphone resamples 48000 Hz continuously to 6000 Hz (37.287916ms)
+✔ Count includes the first send; pauses start after each complete message (2.791ms)
+✔ Timed run never starts a message that cannot finish within its window (0.16125ms)
+✔ Busy channel is retried without counting a skipped transmission (0.167958ms)
+✔ Cancel while waiting prevents every later send (0.120083ms)
+✔ Cancel during transmission is not counted as a completed message (0.120208ms)
+✔ Disconnect errors end scheduling instead of retrying transmission (0.317333ms)
+✔ Invalid plans and too-long messages are rejected before transmitting (0.251458ms)
+✔ An aborted delay finishes promptly (0.501791ms)
+✔ C and JavaScript encode and decode match sample for sample (229.276791ms)
+✔ Independent FFmpeg IMA WAV decoder agrees (82.582334ms)
+✔ Parser handles arbitrary BLE/USB splits and noise without losing frames (0.407667ms)
+✔ Malformed audio is rejected (0.222042ms)
+✔ Continuous 3200 Hz receive at 44100 Hz survives recurring 180 ms delivery stalls (36.545916ms)
+✔ Continuous 3200 Hz receive at 48000 Hz survives recurring 180 ms delivery stalls (26.012208ms)
+✔ Continuous 4000 Hz receive at 44100 Hz survives recurring 180 ms delivery stalls (28.583792ms)
+✔ Continuous 4000 Hz receive at 48000 Hz survives recurring 180 ms delivery stalls (31.582792ms)
+✔ Clock mismatch -0.003 stays bounded for two minutes (36.95375ms)
+✔ Clock mismatch 0.003 stays bounded for two minutes (36.855209ms)
+✔ Packet loss is counted, duplicates ignored and short tails drain (2.266791ms)
+✔ All 16 voice assets preserve checksum, bits and finite timing (379.73425ms)
+✔ Tone test terminates after exactly 5.4 seconds (287.881083ms)
+✔ Receive gate holds stable carriers and releases on carrier loss (546.117916ms)
+✔ Unified preferences migrate legacy settings and reject corruption and invalid values (330.118375ms)
+✔ Squelch blocks weak static and uses hysteresis plus hold time (0.602083ms)
+✔ Muted signals are neither played nor recorded; manually lowering squelch opens reception (0.654083ms)
+✔ Incoming WAV keeps the full transmission, tail, original samples and rate (3.506042ms)
+✔ Missing blocks become silence in recordings; duplicate and old packets are not repeated (0.301292ms)
+✔ Channel changes, PTT, pause, disconnect and rate changes finalize separate recordings (0.758625ms)
+✔ Auto-record off saves nothing; stop saves the active clip; long receives split without dropping samples (0.281792ms)
+✔ PCM is copied before transfer to worklet and WAV is signed little endian (0.266542ms)
+✔ Actual API 88 transmit callbacks preserve 48 kHz PDM timing for voice files and remote audio (264.290125ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1635.883334

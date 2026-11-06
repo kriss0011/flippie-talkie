@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-06",
+  "channel": 9,
+  "user_confirmed": "Yes, the full phrase",
+  "tests": "One native stored test and one USB remote voice test",
+  "public_web_version": "0.8",
+  "rf_tests_ended": true
+}

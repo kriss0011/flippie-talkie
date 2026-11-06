@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-06",
+  "app_version": "0.7",
+  "firmware_api": "88.23",
+  "fix": "Callbacks now return actual microseconds; the API 88 HAL performs duration-to-ARR conversion itself.",
+  "baseline_observed": {
+    "native_elapsed_ms": 1940,
+    "remote_underruns": [
+      252,
+      222
+    ]
+  },
+  "corrected_observed": {
+    "native_elapsed_ms": 2044,
+    "remote_underruns": [
+      0,
+      0
+    ],
+    "remote_dropped_blocks": [
+      0,
+      0
+    ]
+  },
+  "host_tests": {
+    "passed": 33,
+    "failed": 0
+  },
+  "previous_callbacks_fail_regression": true,
+  "settings_preserved": true,
+  "bluetooth_restored": true,
+  "motorola_listening_result": "Pending user confirmation"
+}

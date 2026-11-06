@@ -1,0 +1,36 @@
+{
+  "transport": "USB remote protocol 3",
+  "channel": 9,
+  "tests": [
+    {
+      "epoch": 31,
+      "blocks": 39,
+      "tx_observed": true,
+      "final_status": {
+        "channel": 9,
+        "state": 0,
+        "epoch": 31,
+        "error": 0,
+        "buffered": 0,
+        "underruns": 0,
+        "dropped": 0
+      }
+    },
+    {
+      "epoch": 32,
+      "blocks": 39,
+      "tx_observed": true,
+      "final_status": {
+        "channel": 9,
+        "state": 0,
+        "epoch": 32,
+        "error": 0,
+        "buffered": 0,
+        "underruns": 0,
+        "dropped": 0
+      }
+    }
+  ],
+  "after": "version=3 mode=1 connected=0 attached=0 channel=9 state=0 listen=0 rssi=-97 error=0 rx_dropped=0 tx_dropped=0 underruns=0 tx_tests=2 tx_marcstate=19 read_errors=0 bt_active=0 bt_phy=0 bt_ready=0 ble_packets=0 ble_ms=0 ble_max=0\r\nrx_rate=4000 carrier_checks=0 sample_drops=0 queue_drops=0 ble_timeouts=0 ble_failures=0 audio_floor=-95 gate_reference=0 gate_ambiguous=0",
+  "restored": "version=3 mode=0 connected=0 attached=0 channel=9 state=0 listen=0 rssi=-97 error=0 rx_dropped=0 tx_dropped=0 underruns=0 tx_tests=2 tx_marcstate=19 read_errors=0 bt_active=1 bt_phy=0 bt_ready=0 ble_packets=0 ble_ms=0 ble_max=0\r\nrx_rate=3200 carrier_checks=0 sample_drops=0 queue_drops=0 ble_timeouts=0 ble_failures=0 audio_floor=-95 gate_reference=0 gate_ambiguous=0"
+}

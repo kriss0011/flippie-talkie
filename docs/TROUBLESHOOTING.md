@@ -1,44 +1,61 @@
-> Historical two-app documentation. Version 0.5 merges both modes; see the [current controls](../README.md) and [merge validation](REDESIGN-0.5.md).
-
 # Troubleshooting
 
-## Flipper says the app API is incompatible
+## The Flipper says the app is incompatible
 
-The supplied binaries target Xtreme API 49.2. Check your actual firmware/API. Rebuild/port for that firmware rather than flashing an unrelated firmware just to make this binary load. The BLE integration uses this older SDK's serial profile internals; a newer build may require source changes.
+The supplied app targets RogueMaster API 88.23. Other firmware needs a matching build; see [BUILD.md](BUILD.md). The Bluetooth code uses firmware internals, so a different firmware may need source changes.
 
-## Flipper does not appear, or pairing fails
+## My Flipper doesn't appear in the Bluetooth list
 
-Open Flippie Talkie on Flipper and select Bluetooth with OK. Use a supported browser with Bluetooth permission. Disconnect other browser tabs and the official Flipper mobile app; the device supports one central connection here. Select the device's actual name (Dobby on the tested unit). Pairing is initiated by a secure characteristic read; when a system pairing prompt appears, enter the current code displayed on Flipper. A previously paired device may reconnect without a code. If pairing state is stale, disconnect, remove the old pairing in system settings, reopen the app and pair again.
+- Open **Browser link** on the Flipper first, with **Settings → Connection** set to Bluetooth.
+- Use Chrome, or Bluefy on iPhone and iPad, and allow Bluetooth for the page.
+- Close the official Flipper mobile app and other browser tabs. Only one app can hold the connection.
+- If pairing fails, remove the old pairing from your system's Bluetooth settings and the Flipper, reopen the app and pair again.
 
-## “Connection lost. Transmission has stopped.”
+## “No reply from the Flipper”
 
-The interface disables talk/listen when contact is lost. Open the app again if it exited, confirm the selected transport matches, then reconnect. Keep the page foreground and the phone awake. Do not run two clients. Version 0.3 uses 3.2 kHz Bluetooth downlink audio, prioritizes status, and buffers short timing variations without restarting audible playback. Ensure the web interface and FAP are both from this release.
+**Browser link** must be open on the Flipper, and **Settings → Connection** must match the page. Changing the connection ends the session, so connect again afterwards.
+
+## The USB port won't open
+
+Close qFlipper, serial terminals and other tabs using the device. Open **Browser link** on the Flipper with Connection set to USB, then connect from Chrome or Edge on a computer.
+
+## “Connection lost, so transmitting stopped”
+
+Keep the page in front and the phone awake, and stay close to the Flipper. Check that the app is still open on the Flipper, then connect again. The page and Flipper app should come from the same release.
 
 ## Connected but silent
 
-- Select Start listening. Check browser/system speaker volume and output device, including any Bluetooth headphones.
-- Match the channel on both devices; on the Motorola T72 turn privacy/subcodes off. Channel 9 is 446.10625 MHz.
-- Press the Motorola transmit button and speak; a silent carrier button press contains no voice.
-- Start a practical test around a metre apart, not touching. Compare with a normal radio to separate RF issues from browser playback.
-- Allow microphone access before browser push-to-talk. A microphone level meter only verifies the browser input, not successful RF output.
-- Flippie Talkie uses the computer/phone speaker. For the Flipper's own speaker use Flippie Talkie Radio and set volume above zero.
+- Select **Start listening**, and check the page volume and your output device.
+- Lower **Squelch**, or drag it fully left to turn it off. “Signal below squelch” means a signal is arriving but is being muted.
+- Match the channel on both radios and turn privacy codes off.
+- Speak while you press the other radio's transmit button. A silent carrier has no voice to hear.
+- Start with the radios about a metre apart, not touching.
 
 ## Speech is quiet or noisy
 
-The receiver is an RSSI slope-detector experiment. Its noise and distortion are real limitations; extra gain makes both speech and noise louder. The standalone 0.17 app restores the original linear speaker mapping. Use the browser/computer speaker for greater playback volume. The 3.2 kHz Bluetooth / 4 kHz USB downlink also limits voice bandwidth. Better speaker volume is not evidence of better RF sensitivity.
+This is the limit of the slope-detector receiver; see [How it works](HOW-IT-WORKS.md). More gain makes speech and noise louder together. Browser playback through good speakers can be easier to follow than the Flipper's speaker.
 
-## USB cannot open the port
+## The other radio misses my first words
 
-Close qFlipper, any serial terminal, and other browser tabs using the device. Open Flippie Talkie manually, select USB on Flipper, then USB in desktop Chrome/Edge. Reconnect after changing modes. If the app is not open, its `pmr_connect usb` command does not exist.
+The app already sends half a second of silence first. If a radio still clips words, wait until the button shows **Talking…** before you speak.
 
-## Spoken tests are missing
+## “This channel is busy”
 
-Use Flippie Talkie Radio, not Flippie Talkie. Install every `chNN.pdm` into `SD/apps_data/pmr_radio/voice/`, select a channel, then hold OK on the main screen. The file header includes the channel number and checksum, so simply renaming another channel's asset will not make a valid replacement. Run the offline asset tests after regenerating prompts.
+The Flipper can hear a signal on the channel, so it won't transmit. Wait, or pick another channel. Strong local interference can cause this too.
 
-## Recordings have gaps or fail to save
+## “TX blocked”
 
-Flippie Talkie Radio saves WAV files under `SD/apps_data/pmr_voice/`; Flippie Talkie does not save recordings. Check the menu's recording setting, card free space and that the app finishes recording before you copy a file. A slow/occasionally stalled SD write was observed and is not proven resolved. The validation report records one failure followed by a passing repeat; don't assume missing audio can be restored by filtering. Preserve original files before repair or analysis. Incorrect device time affects filenames, not the nominal audio sample rate.
+The firmware doesn't allow transmitting on this frequency. This project doesn't bypass that restriction.
 
-## Local page works on Mac but not phone
+## The voice test doesn't work
 
-`localhost` on a phone refers to the phone itself. Use the hosted HTTPS interface, or deploy `web/` to your own HTTPS host. Plain LAN HTTP is insufficient. iOS requires a browser exposing Web Bluetooth (Bluefy is the candidate); the user confirmed basic operation on iPhone, but sustained smooth playback with v0.3 still needs a listening test. A site's sign-in/hosting access and its permission to use nearby Bluetooth hardware are separate steps.
+Copy all 16 `chNN.pdm` files to `apps_data/pmr_radio/voice/`. Each file carries its channel number and a checksum, so renaming another channel's file won't work.
+
+## Recordings are missing or have gaps
+
+- On the Flipper, check **Auto-record** and free space, and let recording finish before you remove the card. SD write stalls have lost samples before, and filtering can't restore them.
+- In the browser, recordings stay in that browser only and can be cleared with site data. Download anything you want to keep.
+
+## It works on my Mac but not my phone
+
+`localhost` on a phone means the phone itself, and Bluetooth and the microphone need HTTPS. Use the hosted app, or put `web/` on your own HTTPS host.

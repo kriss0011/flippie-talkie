@@ -1,0 +1,42 @@
+name: Bug report
+description: Something doesn't work as documented
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: App and web versions
+      description: Home screen on the Flipper, and the web app's footer.
+      placeholder: App 0.9, Web 0.9
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Flipper firmware and API version
+      placeholder: RogueMaster, API 88.23
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - Listen on Flipper
+        - Browser link over Bluetooth
+        - Browser link over USB
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Chrome 140 on macOS
+  - type: textarea
+    id: steps
+    attributes:
+      label: What happened, and what you expected
+      description: Include the steps to reproduce, and Help → Link details from the web app if you were connected. Please don't attach recordings of other people.
+    validations:
+      required: true

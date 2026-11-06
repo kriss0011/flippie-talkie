@@ -2,7 +2,7 @@
 
 Browser-only update. No Flipper flash or installation is required. The existing protocol 2/3 Bluetooth and USB transports remain compatible, including the newer native Flippie Talkie interface.
 
-Open https://flippie-talkie.kriss0011.chatgpt.site and reload until the footer reads **Flippie Talkie Web 0.7**. The website is available to anyone with the link; the GitHub repository remains private. Each visitor connects their own nearby Flipper through their browser. Audio and recordings are not uploaded to this website.
+Open https://flippie-talkie.kriss0011.chatgpt.site and reload until the footer reads **Flippie Talkie Web 0.7**. The website is available to anyone with the link. Each visitor connects their own nearby Flipper through their browser. Audio and recordings are not uploaded to this website.
 
 ## Squelch
 

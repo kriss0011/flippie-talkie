@@ -1,0 +1,11 @@
+	CC	applications_user/flippie_talkie/flippie_talkie.c
+	CC	applications_user/flippie_talkie/pmr_capture.c
+	CC	applications_user/flippie_talkie/pmr_connect.c
+	SDKCHK	targets/f7/api_symbols.csv
+[32mAPI version 88.23 is up to date[0m
+	LINK	build/f7-firmware-C/.extapps/flippie_talkie_d.elf
+	APPMETA	build/f7-firmware-C/.extapps/flippie_talkie.fap
+	FAP	build/f7-firmware-C/.extapps/flippie_talkie.fap
+	FASTFAP	build/f7-firmware-C/.extapps/flippie_talkie.fap
+	APPCHK	build/f7-firmware-C/.extapps/flippie_talkie.fap
+Built Flippie Talkie. Install files from <repo>/build/sd/

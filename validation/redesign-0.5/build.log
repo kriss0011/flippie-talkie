@@ -1,6 +1,6 @@
 
-fbt: warning: App folder '/Users/user/Documents/Codex/2026-11-05/flipper-zero-firmware-x20/work/xtreme-firmware/applications/external': missing manifest (application.fam)
-LoadAppManifest, line 132, in file "/Users/user/Documents/Codex/2026-11-05/flipper-zero-firmware-x20/work/xtreme-firmware/scripts/fbt_tools/fbt_apps.py"
+fbt: warning: App folder '<workspace>/work/xtreme-firmware/applications/external': missing manifest (application.fam)
+LoadAppManifest, line 132, in file "<workspace>/work/xtreme-firmware/scripts/fbt_tools/fbt_apps.py"
 	CC	applications_user/flippie_talkie/pmr_capture.c
 	SDKCHK	targets/f7/api_symbols.csv
 	LINK	build/f7-firmware-C/.extapps/flippie_talkie_d.elf
@@ -9,4 +9,4 @@ API version 49.2 is up to date
 	FAP	build/f7-firmware-C/.extapps/flippie_talkie.fap
 	FASTFAP	build/f7-firmware-C/.extapps/flippie_talkie.fap
 	APPCHK	build/f7-firmware-C/.extapps/flippie_talkie.fap
-Built Flippie Talkie. Install files from /Users/user/Documents/flippie-talkie/build/sd/
+Built Flippie Talkie. Install files from <repo>/build/sd/

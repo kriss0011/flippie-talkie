@@ -1,0 +1,49 @@
+
+> flippie-talkie@0.7.0 test
+> node --test tests/*.test.js
+
+✔ Microphone resamples 44100 Hz continuously to 6000 Hz (42.060708ms)
+✔ Microphone resamples 48000 Hz continuously to 6000 Hz (36.115709ms)
+✔ Count includes the first send; pauses start after each complete message (2.201209ms)
+✔ Timed run never starts a message that cannot finish within its window (0.15275ms)
+✔ Busy channel is retried without counting a skipped transmission (0.16125ms)
+✔ Cancel while waiting prevents every later send (0.115583ms)
+✔ Cancel during transmission is not counted as a completed message (0.133666ms)
+✔ Disconnect errors end scheduling instead of retrying transmission (0.312292ms)
+✔ Invalid plans and too-long messages are rejected before transmitting (0.302583ms)
+✔ An aborted delay finishes promptly (0.240541ms)
+✔ C and JavaScript encode and decode match sample for sample (587.863625ms)
+✔ Independent FFmpeg IMA WAV decoder agrees (90.331625ms)
+✔ Parser handles arbitrary BLE/USB splits and noise without losing frames (0.420708ms)
+✔ Malformed audio is rejected (0.221875ms)
+✔ Continuous 3200 Hz receive at 44100 Hz survives recurring 180 ms delivery stalls (33.175375ms)
+✔ Continuous 3200 Hz receive at 48000 Hz survives recurring 180 ms delivery stalls (24.941333ms)
+✔ Continuous 4000 Hz receive at 44100 Hz survives recurring 180 ms delivery stalls (31.221084ms)
+✔ Continuous 4000 Hz receive at 48000 Hz survives recurring 180 ms delivery stalls (28.272417ms)
+✔ Clock mismatch -0.003 stays bounded for two minutes (36.911292ms)
+✔ Clock mismatch 0.003 stays bounded for two minutes (36.641916ms)
+✔ Packet loss is counted, duplicates ignored and short tails drain (2.329333ms)
+✔ All 16 voice assets preserve checksum, bits and finite timing (726.123833ms)
+✔ Tone test terminates after exactly 5.4 seconds (253.298875ms)
+✔ Receive gate holds stable carriers and releases on carrier loss (265.786791ms)
+✔ Unified preferences migrate legacy settings and reject corruption and invalid values (250.308417ms)
+✔ Squelch blocks weak static and uses hysteresis plus hold time (0.947625ms)
+✔ Muted signals are neither played nor recorded; manually lowering squelch opens reception (1.363875ms)
+✔ Incoming WAV keeps the full transmission, tail, original samples and rate (2.676667ms)
+✔ Missing blocks become silence in recordings; duplicate and old packets are not repeated (0.273166ms)
+✔ Channel changes, PTT, pause, disconnect and rate changes finalize separate recordings (0.739667ms)
+✔ Auto-record off saves nothing; stop saves the active clip; long receives split without dropping samples (0.264917ms)
+✔ PCM is copied before transfer to worklet and WAV is signed little endian (0.312625ms)
+✔ Recorded sends wait for the complete radio tail, beyond the previous 220 ms (3.126875ms)
+✔ Stop during drain cancels before another message can be scheduled (0.387375ms)
+✔ A stale epoch cannot confirm completion; missing status times out (0.15175ms)
+✔ Disconnects and radio errors are not counted as successful sends (0.177584ms)
+✔ Actual API 88 callbacks preserve voice timing, add exactly 500 ms of silence and retain queued PCM (721.922083ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1587.094875

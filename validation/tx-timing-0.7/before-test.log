@@ -1,0 +1,34 @@
+Assertion failed: (elapsed*48000ULL==header[2]*1000000ULL), function main, file check.c, line 46.
+✖ Actual API 88 transmit callbacks preserve 48 kHz PDM timing for voice files and remote audio (420.910708ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 498.1295
+
+✖ failing tests:
+
+test at ../../../tests/tx-timing.test.js:17:1
+✖ Actual API 88 transmit callbacks preserve 48 kHz PDM timing for voice files and remote audio (420.910708ms)
+  Error: Command failed: /var/folders/q1/975yqvj95kj9fg_vkrqxx2qr0000gn/T/flippie-tx-timing-98aRhp/check sd/apps_data/pmr_radio/voice/ch01.pdm sd/apps_data/pmr_radio/voice/ch02.pdm sd/apps_data/pmr_radio/voice/ch03.pdm sd/apps_data/pmr_radio/voice/ch04.pdm sd/apps_data/pmr_radio/voice/ch05.pdm sd/apps_data/pmr_radio/voice/ch06.pdm sd/apps_data/pmr_radio/voice/ch07.pdm sd/apps_data/pmr_radio/voice/ch08.pdm sd/apps_data/pmr_radio/voice/ch09.pdm sd/apps_data/pmr_radio/voice/ch10.pdm sd/apps_data/pmr_radio/voice/ch11.pdm sd/apps_data/pmr_radio/voice/ch12.pdm sd/apps_data/pmr_radio/voice/ch13.pdm sd/apps_data/pmr_radio/voice/ch14.pdm sd/apps_data/pmr_radio/voice/ch15.pdm sd/apps_data/pmr_radio/voice/ch16.pdm
+  Assertion failed: (elapsed*48000ULL==header[2]*1000000ULL), function main, file check.c, line 46.
+  
+      at genericNodeError (node:internal/errors:983:15)
+      at wrappedFn (node:internal/errors:537:14)
+      at checkExecSyncError (node:child_process:892:11)
+      at execFileSync (node:child_process:928:15)
+      at TestContext.<anonymous> (file://<repo>/tests/tx-timing.test.js:62:5)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1062:25)
+      at Test.start (node:internal/test_runner/test:959:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:332:17) {
+    status: null,
+    signal: 'SIGABRT',
+    output: [ null, <Buffer >, <Buffer 41 73 73 65 72 74 69 6f 6e 20 66 61 69 6c 65 64 3a 20 28 65 6c 61 70 73 65 64 2a 34 38 30 30 30 55 4c 4c 3d 3d 68 65 61 64 65 72 5b 32 5d 2a 31 30 30 ... 48 more bytes> ],
+    pid: 56732,
+    stdout: <Buffer >,
+    stderr: <Buffer 41 73 73 65 72 74 69 6f 6e 20 66 61 69 6c 65 64 3a 20 28 65 6c 61 70 73 65 64 2a 34 38 30 30 30 55 4c 4c 3d 3d 68 65 61 64 65 72 5b 32 5d 2a 31 30 30 ... 48 more bytes>
+  }

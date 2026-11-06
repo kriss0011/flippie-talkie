@@ -1,4 +1,4 @@
-> Historical two-app documentation. Version 0.5 merges both modes; see the [current controls](../README.md) and [merge validation](REDESIGN-0.5.md).
+> Historical two-app documentation. Version 0.5 merges both modes; see the [current controls](../../README.md) and [merge validation](REDESIGN-0.5.md).
 
 # PMR Connect 0.3 — short receive-audio cuts
 
@@ -32,4 +32,4 @@ The frame layout is unchanged, but status reports protocol 3 and the transport-s
 - USB channel 1/16/9, listening and missing-heartbeat stop checks passed, followed by return to Bluetooth channel 9. No RF transmission was needed for this change's bench checks.
 - The Mac was locked during browser verification, so a new visual/real-browser playback check was unavailable. The pure playback engine tests do not substitute for an actual iPhone listening test.
 
-Original reports are in [`validation/connect-v0.3/`](../validation/connect-v0.3/). Existing v0.2 reports remain historical evidence. The next acceptance check is a continuous 30-second Motorola transmission heard in Bluefy with the page foreground, followed by releasing PTT to check that reception returns to idle. The user has not yet confirmed smoothness of this new version.
+Original reports are in [`validation/connect-v0.3/`](../../validation/connect-v0.3/). Existing v0.2 reports remain historical evidence. The next acceptance check is a continuous 30-second Motorola transmission heard in Bluefy with the page foreground, followed by releasing PTT to check that reception returns to idle. The user has not yet confirmed smoothness of this new version.

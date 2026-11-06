@@ -12,3 +12,4 @@ __pycache__/
 *.key
 *.p12
 *.pfx
+/releases/Flippie-Talkie-v0.[0-8].zip

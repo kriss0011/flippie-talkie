@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security or transmit-safety issue
+    url: https://github.com/kriss0011/flippie-talkie/security/advisories/new
+    about: Report these privately. See SECURITY.md.

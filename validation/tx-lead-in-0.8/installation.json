@@ -1,0 +1,11 @@
+{
+  "old_md5": "a5b10f4c7c7c864609e40eea2ebb6aef",
+  "settings_before": "523458a36bdd0f219f23dc806d8cfa5f",
+  "status_before": "version=3 mode=0 connected=0 attached=0 channel=9 state=0 listen=0 rssi=-95 error=0 rx_dropped=0 tx_dropped=0 underruns=0 tx_tests=46 tx_marcstate=19 read_errors=0 bt_active=1 bt_phy=0 bt_ready=0 ble_packets=0 ble_ms=0 ble_max=0\r\nrx_rate=3200 carrier_checks=0 sample_drops=0 queue_drops=0 ble_timeouts=0 ble_failures=0 audio_floor=-100 gate_reference=0 gate_ambiguous=0",
+  "backup": "/ext/apps_data/pmr_radio/Flippie_Talkie_0.7_before_tx_lead_in.fap.bak",
+  "new_md5": "c793286da187f0b479f8c000b2da8eeb",
+  "new_sha256": "071ac4c674ff5e7344da80f8a93eaca77b93641c0a2a201ce9a06ed739d1204c",
+  "status_after": "version=18 on_dbm=-90 off_dbm=-94 audio_floor=-96 audio_off=-92 floor_ready=1 state=ready profile=2 samples=0 elapsed=0 signal=IDLE rssi=-93 armed=1 dropped=0 files=0 peak=-93 legacy_trigger_dbm=-80 triggers=0 rx_state=13 read_errors=0 recoveries=0 last_signal_tick=0 tuned_hz=446106140 calibration=off cal_step=0 selected=6 range=0 audio_setting=6 center=-93 carrier_checks=0 tuning_probes=0 file=\r\nchannel=9 frequency=446106250 menu=0 menu_index=0 settings_error=0 voice=0\r\nlocal_record=1 speaker=1 volume=8 saved=0 sd_error=0 wav_frames=0 sd_writes=0 sd_max_us=0 gap_frames=0 clips=0 max_irq_cycles=0 max_gap_cycles=0 ready_file=1",
+  "settings_after": "523458a36bdd0f219f23dc806d8cfa5f",
+  "passed": true
+}
