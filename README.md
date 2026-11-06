@@ -2,6 +2,8 @@
 
 **Turn a Flipper Zero into a PMR446 walkie-talkie.** Listen through the Flipper's speaker and save what you hear to the SD card, or link it to a browser and talk with your phone or computer microphone.
 
+https://github.com/user-attachments/assets/f5c2c351-062a-498e-87a4-9aacaae06265
+
 | On the Flipper | In the browser |
 | --- | --- |
 | ![Listening on channel 9 on the Flipper](docs/images/flipper-listen.png) | ![Web app on a phone while talking](docs/images/web-phone-talking.png) |
