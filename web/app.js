@@ -3,8 +3,9 @@ import {BluetoothLink,USBLink} from './transports.js';
 import {ReceiveSession,DEFAULT_SQUELCH} from './receiver.js';
 import {recordingLibrary} from './recordings-ui.js';
 import {messagePanel} from './messages.js';
+import {TX_LEAD_IN_MS,waitForTxIdle} from './tx-timing.js';
 const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
-let link,ready=false,connecting=false,status,lastStatus=0,heartbeat,monitor,ctx,output,speaker,playback={},micStream,micNode,micReady=false,held=false,transmitting=false,epoch=0,seq=0,encoder={index:0},pending=0,operation=0,rxSequence=null,received=0,lost=0,wakeLock,draftCapture=null,messageBusy=false;
+let link,ready=false,connecting=false,status,lastStatus=0,heartbeat,monitor,ctx,output,speaker,playback={},micStream,micNode,micReady=false,held=false,transmitting=false,epoch=0,seq=0,encoder={index:0},pending=0,operation=0,rxSequence=null,received=0,lost=0,wakeLock,draftCapture=null,messageBusy=false,drainingEpoch=null,txReadyAt=0;
 for(let i=1;i<=16;i++)$('channel').add(new Option(String(i).padStart(2,'0'),i));$('channel').value='9';
 let channelSquelch={};
 try{channelSquelch=JSON.parse(localStorage.getItem('flippie-squelch')||'{}')||{};if(typeof channelSquelch!=='object'||Array.isArray(channelSquelch))channelSquelch={};}catch{}
@@ -30,7 +31,7 @@ const messages=messagePanel({
   cancel:()=>stopTalk(false),
   busy:value=>{messageBusy=value;render();},
 });
-setInterval(()=>{const was=receiver.audible;receiver.tick();library.update(receiver.clip);if(was!==receiver.audible)render();},100);
+setInterval(()=>{if(txReadyAt&&performance.now()>=txReadyAt){txReadyAt=0;render();}const was=receiver.audible;receiver.tick();library.update(receiver.clip);if(was!==receiver.audible)render();},100);
 const errors={1:'This channel is busy. Wait for the other radio to finish.',2:'This Flipper’s firmware does not allow transmission on this channel.',3:'Finish talking before changing channel.',4:'The radio could not start. Reconnect and try again.',5:'Audio stopped or the connection timed out. Press again to resume.',8:'An audio packet was damaged.',9:'The connection could not keep up. Move closer to the Flipper.'};
 function notice(text=''){ $('notice').textContent=text;$('notice').hidden=!text; }
 function clearPlayback(reason='Reception stopped'){receiver.reset(reason);rxSequence=null;}
@@ -45,7 +46,7 @@ function render(){
   $('listen').disabled=!live||held||messageBusy||status?.state>=3;$('listen').querySelector('span').textContent=live&&status.listening?'Pause listening':'Start listening';
   $('mic').disabled=held||messageBusy||!!draftCapture;$('mic').textContent=micReady?'Mute microphone':'Enable microphone';
   $('ptt').disabled=!ready||!micReady||messageBusy||!!draftCapture||(!held&&status?.state>=3);$('ptt').classList.toggle('active',held);
-  $('ptt-label').textContent=held?(transmitting?'Talking…':'Opening channel…'):'Hold to talk';
+  $('ptt-label').textContent=held?(transmitting&&!txReadyAt&&status?.state===4?'Talking…':'Opening channel…'):drainingEpoch!==null?'Finishing message…':'Hold to talk';
   const names=['Listening paused','Listening','Receiving','Preparing microphone','Transmitting'];
   $('radio-state').textContent=live?(status.state===2&&!receiver.audible?'Squelch · muted':names[status.state]||'Connected'):'Connect to use your radio';$('state-dot').classList.toggle('live',!!live&&((status.state===2&&receiver.audible)||status.state>=3));
   $('signal').textContent=live&&status.rssi>-127?`${status.rssi} dBm`:'No signal reading';
@@ -68,7 +69,8 @@ function receive(packet){
     speaker?.port.postMessage({type:'rate',rate:status.rxRate});
     if(document.hidden)receiver.reset('Page moved to background');else receiver.update(status);
     if(status.state===2&&previousState!==2)speaker?.port.postMessage({type:'begin'});
-    if(transmitting&&status.epoch===epoch&&status.state<3)stopTalk(false);
+    if(status.epoch===epoch&&status.state===4&&previousState!==4)txReadyAt=performance.now()+TX_LEAD_IN_MS;
+    if(status.epoch===epoch&&status.state<3){drainingEpoch=null;txReadyAt=0;if(transmitting)stopTalk(false);}
     render();return;
   }
   if(packet.type!==0x82||!ready||!status?.listening||held||!ctx||ctx.state!=='running')return;
@@ -80,7 +82,7 @@ function receive(packet){
   }catch(e){notice(e.message);}
 }
 async function send(type,payload=new Uint8Array(),e=epoch){if(!link)throw Error('Connect your Flipper first.');return link.write(frame(type,payload,e,seq++));}
-function lostConnection(){messages.stop('Flipper disconnected.');operation++;ready=false;connecting=false;held=false;transmitting=false;micNode?.port.postMessage(false);clearInterval(heartbeat);clearInterval(monitor);clearPlayback();status=null;releaseMic();wakeLock?.release().catch(()=>{});render();}
+function lostConnection(){messages.stop('Flipper disconnected.');drainingEpoch=null;txReadyAt=0;operation++;ready=false;connecting=false;held=false;transmitting=false;micNode?.port.postMessage(false);clearInterval(heartbeat);clearInterval(monitor);clearPlayback();status=null;releaseMic();wakeLock?.release().catch(()=>{});render();}
 async function disconnect(){const old=link;stopTalk(false);try{await send(7);}catch{}link=null;lostConnection();try{await old?.close();}catch{}}
 $('connect').onclick=async()=>{
   if(ready||connecting){await disconnect();return;}notice();connecting=true;render();const current=++operation;
@@ -137,8 +139,8 @@ async function startTalk(recorded=false){
   }catch(e){stopTalk(false);notice(e.message);}
 }
 function stopTalk(drain=true){
-  const wasHeld=held;held=false;transmitting=false;if(!draftCapture)micNode?.port.postMessage(false);setMeter(0);
-  if(wasHeld&&link)send(6,Uint8Array.of(drain?1:0)).catch(()=>{});render();
+  const wasHeld=held,forceStop=!drain&&(drainingEpoch===epoch||status?.epoch===epoch&&status?.state>=3);held=false;transmitting=false;txReadyAt=0;if(!draftCapture)micNode?.port.postMessage(false);setMeter(0);
+  if((wasHeld||forceStop)&&link){drainingEpoch=drain?epoch:null;send(6,Uint8Array.of(drain?1:0)).catch(()=>{});}render();
 }
 async function transmitRecorded(pcm,signal){
   if(!ready||!link)throw Error('Connect your Flipper before sending.');
@@ -154,11 +156,11 @@ async function transmitRecorded(pcm,signal){
       await send(5,encode(block,encoder),thisEpoch);n++;
       const delay=start+n*SAMPLES/RATE*1000-performance.now();if(delay < -250)throw Error('Audio delivery fell behind. Move closer to the Flipper and try again.');if(delay>0)await sleep(delay);
     }
-    stopTalk(true);await sleep(220);
-  }finally{signal.removeEventListener('abort',abort);if(held)stopTalk(false);}
+    stopTalk(true);await waitForTxIdle({epoch:thisEpoch,getStatus:()=>status,isReady:()=>ready,signal});
+  }finally{signal.removeEventListener('abort',abort);if(held||drainingEpoch!==null)stopTalk(false);}
 }
 $('ptt').onpointerdown=e=>{if(e.button!==0)return;e.preventDefault();$('ptt').setPointerCapture(e.pointerId);startTalk();};
-$('ptt').onpointerup=()=>stopTalk();$('ptt').onpointercancel=()=>stopTalk(false);$('ptt').onlostpointercapture=()=>stopTalk(false);$('ptt').oncontextmenu=e=>e.preventDefault();
+$('ptt').onpointerup=()=>stopTalk();$('ptt').onpointercancel=()=>stopTalk(false);$('ptt').onlostpointercapture=()=>{if(held)stopTalk(false);};$('ptt').oncontextmenu=e=>e.preventDefault();
 window.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!['INPUT','SELECT','TEXTAREA','BUTTON','SUMMARY','A'].includes(document.activeElement?.tagName)){e.preventDefault();startTalk();}else if(e.code==='Space'&&document.activeElement===$('ptt')&&!e.repeat){e.preventDefault();startTalk();}});
 window.addEventListener('keyup',e=>{if(e.code==='Space'&&!messageBusy){e.preventDefault();stopTalk();}});
 window.addEventListener('blur',()=>{messages.stop('Stopped when this page lost focus.',false);stopTalk(false);});document.addEventListener('visibilitychange',()=>{if(document.hidden){messages.stop('Stopped in the background.');stopTalk(false);clearPlayback('Page moved to background');}});window.addEventListener('pagehide',()=>{messages.stop('Page closed.');clearPlayback('Page closed');stopTalk(false);send(7).catch(()=>{});});

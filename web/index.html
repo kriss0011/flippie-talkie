@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#000000"><title>Flippie Talkie</title><link rel="stylesheet" href="style.css?v=0.7"><link rel="icon" href="data:,"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#000000"><title>Flippie Talkie</title><link rel="stylesheet" href="style.css?v=0.8"><link rel="icon" href="data:,"></head>
 <body>
 <header><a class="brand" href="./" aria-label="Flippie Talkie home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8V2m8 7V5M6 9h12v13H6zM9 13h6m-6 4h6"/></svg>Flippie Talkie</a><span class="device" id="device">Flipper radio</span></header>
 <main>
@@ -25,7 +25,7 @@
 <p class="mic-help" id="mic-help">Enable your microphone before talking.</p>
 <div class="meter" role="meter" aria-label="Microphone level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><span></span></div>
 <button id="ptt" class="ptt" disabled aria-describedby="ptt-help"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="12" y="3" width="8" height="16" rx="4"/><path d="M7 15v2a9 9 0 0 0 18 0v-2M16 26v4m-5 0h10"/></svg><strong id="ptt-label">Hold to talk</strong><span id="ptt-detail">Channel 9</span></button>
-<p id="ptt-help">Hold the button or space bar. Release to listen.</p>
+<p id="ptt-help">Hold to talk. Release to finish your message.</p>
 </section>
 </div>
 <section class="recordings-panel" aria-labelledby="recordings-title">
@@ -49,7 +49,7 @@
 <div class="message-buttons"><button id="send-message" class="primary" disabled>Start repeats</button><button id="stop-message" class="secondary" disabled>Stop</button></div>
 <p class="recording-help">Uses the selected channel. The pause starts after each message. Keep this page in front; switching away or disconnecting stops repeats. Busy channels are retried after the pause. Up to 45 seconds per message; timed runs up to 60 minutes.</p>
 </section>
-<details class="help"><summary>Connecting a phone or computer</summary><div><p><strong>Android and computers:</strong> use Chrome. <strong>iPhone and iPad:</strong> open this page in <a href="https://bluefy.app/" target="_blank" rel="noreferrer">Bluefy</a>. Safari cannot connect directly over Bluetooth.</p><p>Keep this page in front while using the radio. Confirm any pairing prompt on the Flipper. Close the official Flipper mobile app if it is already connected.</p><p>On your other walkie-talkie, select the same channel and turn privacy codes off. Receiving uses the experimental Flipper receiver, so some noise remains.</p><p>Squelch filters weaker signals using the Flipper’s reported signal strength. Drag fully left for Off. Strong interference can still pass. Keep the page in front for reception and recording; browser data can be cleared, so download important clips. Long transmissions are saved in consecutive ten-minute parts.</p><p id="diagnostics">No live connection.</p></div></details>
-<footer>Flippie Talkie Web 0.7 · Audio travels directly between this device and your Flipper.</footer>
-</main><script type="module" src="app.js?v=0.7"></script>
+<details class="help"><summary>Connecting a phone or computer</summary><div><p><strong>Android and computers:</strong> use Chrome. <strong>iPhone and iPad:</strong> open this page in <a href="https://bluefy.app/" target="_blank" rel="noreferrer">Bluefy</a>. Safari cannot connect directly over Bluetooth.</p><p>Keep this page in front while using the radio. Confirm any pairing prompt on the Flipper. Close the official Flipper mobile app if it is already connected.</p><p>On your other walkie-talkie, select the same channel and turn privacy codes off. Receiving uses the experimental Flipper receiver, so some noise remains.</p><p>Squelch filters weaker signals using the Flipper’s reported signal strength. Drag fully left for Off. Strong interference can still pass. Keep the page in front for reception and recording; browser data can be cleared, so download important clips. Long transmissions are saved in consecutive ten-minute parts.</p><p>App 0.8 adds half a second of silence before speech so the other radio can open its audio. Speech is buffered during that lead-in. Releasing PTT finishes the queued speech; Stop cancels immediately.</p><p id="diagnostics">No live connection.</p></div></details>
+<footer>Flippie Talkie Web 0.8 · Audio travels directly between this device and your Flipper.</footer>
+</main><script type="module" src="app.js?v=0.8"></script>
 </body></html>
